@@ -1,0 +1,1290 @@
+---
+title: "Exp1_Analysis"
+author: "Will Hayes"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Experiment 1 Analyses
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gridExtra)
+library(afex)
+```
+
+## Load data
+
+1. Load the empirical data
+
+```{r}
+source('../modeling/load_data.R')
+```
+
+
+2. Load the model simulations
+
+```{r}
+sims1 <- readRDS('../modeling/results/model1_sims.RDS')
+sims2 <- readRDS('../modeling/results/model2_sims.RDS')
+sims3 <- readRDS('../modeling/results/model3_sims.RDS')
+sims4 <- readRDS('../modeling/results/model4_sims.RDS')
+sims5 <- readRDS('../modeling/results/model5_sims.RDS')
+sims6 <- readRDS('../modeling/results/model6_sims.RDS')
+sims7 <- readRDS('../modeling/results/model7_sims.RDS')
+```
+
+
+## Set order of models for plotting
+
+```{r}
+model_order <- c('model_1', 'model_2', 'model_3',
+                 'model_4', 'model_5', 'model_6', 'model_7')
+
+model_labels <- c('Q',
+                  'Q * gaze',
+                  'Q + gaze',
+                  'softmax(Q)',
+                  'softmax(Q * gaze)',
+                  'softmax(Q) * gaze',
+                  'softmax(Q) + gaze')
+```
+
+
+
+## Learning curves
+
+1. Empirical learning curve.
+
+```{r}
+# compute proportion of correct choices on each trial (across participants)
+lcData <- dat %>%
+  group_by(trial_number) %>%
+  summarise(acc = mean(correct),
+            n = n()) %>%
+  ungroup() %>%
+  mutate(se = sqrt(acc * (1 - acc) / n),
+         upper = acc + se,
+         lower = acc - se)
+```
+
+
+2. Model-simulated learning curves
+
+```{r}
+# Step 1: For each subject, compute p(correct) on each trial across the 100 simulation runs
+# Returns a 60 (trials) x 83 (subjects) matrix
+model1_lc <- sapply(sims1, function(X) rowMeans(X[,1,]), simplify='array')
+model2_lc <- sapply(sims2, function(X) rowMeans(X[,1,]), simplify='array')
+model3_lc <- sapply(sims3, function(X) rowMeans(X[,1,]), simplify='array')
+model4_lc <- sapply(sims4, function(X) rowMeans(X[,1,]), simplify='array')
+model5_lc <- sapply(sims5, function(X) rowMeans(X[,1,]), simplify='array')
+model6_lc <- sapply(sims6, function(X) rowMeans(X[,1,]), simplify='array')
+model7_lc <- sapply(sims7, function(X) rowMeans(X[,1,]), simplify='array')
+
+# Step 2: Average across subjects
+# Returns a vector of simulated mean p(correct) on each trial
+model1_lc <- rowMeans(model1_lc)
+model2_lc <- rowMeans(model2_lc)
+model3_lc <- rowMeans(model3_lc)
+model4_lc <- rowMeans(model4_lc)
+model5_lc <- rowMeans(model5_lc)
+model6_lc <- rowMeans(model6_lc)
+model7_lc <- rowMeans(model7_lc)
+```
+
+
+3. Merge model predictions with the empirical data.
+
+```{r}
+lcData <- lcData %>%
+  mutate(model_1 = model1_lc,
+         model_2 = model2_lc,
+         model_3 = model3_lc,
+         model_4 = model4_lc,
+         model_5 = model5_lc,
+         model_6 = model6_lc,
+         model_7 = model7_lc)
+
+# reshape to long format
+lcData1 <- lcData %>%
+  pivot_longer(cols=model_1:model_7,
+               names_to='model',
+               values_to='fit')
+
+# turn model into a factor to control ordering
+lcData1 <- lcData1 %>%
+  mutate(model = factor(model, levels=model_order, labels=model_labels))
+```
+
+WRITE DATA TO FILE
+
+```{r}
+#write.csv(lcData1, 'Exp1_LearningCurve_Fits.csv', row.names=F)
+```
+
+
+4. Plot of learning curve fits for all models
+
+```{r}
+p1 <- ggplot(lcData1, aes(x=trial_number, y=acc)) +
+  facet_wrap( ~model, nrow=1) +
+  geom_line() +
+  geom_ribbon(aes(ymin=lower, ymax=upper), alpha=0.3) +
+  geom_line(aes(y=fit), col='maroon1', lty=1) +
+  ylab('Choice accuracy') +
+  xlab('Trial number') +
+  ggpubr::theme_pubclean() +
+  ggtitle('Exp. 1: Accuracy Curve') +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+# png('Exp1_LearningCurve.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(lcData1, model %in% c('Q + gaze', 'softmax(Q) + gaze')), 
+#        aes(x=trial_number, y=acc)) +
+#   geom_line() +
+#   geom_ribbon(aes(ymin=lower, ymax=upper), alpha=0.3) +
+#   geom_line(aes(y=fit, col=model), lty=1, lwd=0.8) +
+#   ylab('Choice accuracy') +
+#   xlab('Trial number') + 
+#   scale_color_manual(values=c('green', 'maroon1')) +
+#   theme_classic(base_size = 11) +
+#   theme(panel.grid.minor.x = element_blank(),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.minor.y = element_blank(),
+#         panel.grid.major.y = element_blank(),
+#         legend.position = 'inside',
+#         legend.position.inside = c(.65, .2),
+#         legend.title = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+## Response time curves
+
+
+1. Empirical response time curve (RTs < 250 ms or > 10 sec excluded)
+
+```{r}
+# compute mean RT on each trial (across participants)
+rtcData <- dat %>%
+  filter(RT >= 250, RT <= 10000) %>%
+  group_by(trial_number) %>%
+  summarise(mean_RT = mean(RT),
+            sd_RT = sd(RT),
+            n = n()) %>%
+  ungroup() %>%
+  mutate(se = sd_RT / sqrt(n),
+         upper = mean_RT + se,
+         lower = mean_RT - se)
+```
+
+
+2. Model-simulated RT curves
+
+```{r}
+# Step 1: For each subject, compute mean RT on each trial across the 100 simulation runs
+# Returns a 60 (trials) x 83 (subjects) matrix
+model1_rtc <- sapply(sims1, function(X) rowMeans(X[,2,]), simplify='array')
+model2_rtc <- sapply(sims2, function(X) rowMeans(X[,2,]), simplify='array')
+model3_rtc <- sapply(sims3, function(X) rowMeans(X[,2,]), simplify='array')
+model4_rtc <- sapply(sims4, function(X) rowMeans(X[,2,]), simplify='array')
+model5_rtc <- sapply(sims5, function(X) rowMeans(X[,2,]), simplify='array')
+model6_rtc <- sapply(sims6, function(X) rowMeans(X[,2,]), simplify='array')
+model7_rtc <- sapply(sims7, function(X) rowMeans(X[,2,]), simplify='array')
+
+# Step 2: Average across subjects
+# Returns a vector of simulated mean RTs on each trial
+model1_rtc <- rowMeans(model1_rtc)
+model2_rtc <- rowMeans(model2_rtc)
+model3_rtc <- rowMeans(model3_rtc)
+model4_rtc <- rowMeans(model4_rtc)
+model5_rtc <- rowMeans(model5_rtc)
+model6_rtc <- rowMeans(model6_rtc)
+model7_rtc <- rowMeans(model7_rtc)
+```
+
+
+3. Merge model predictions with the empirical data.
+
+```{r}
+rtcData <- rtcData %>%
+  mutate(model_1 = model1_rtc,
+         model_2 = model2_rtc,
+         model_3 = model3_rtc,
+         model_4 = model4_rtc,
+         model_5 = model5_rtc,
+         model_6 = model6_rtc,
+         model_7 = model7_rtc)
+
+# reshape to long format
+rtcData1 <- rtcData %>%
+  pivot_longer(cols=model_1:model_7,
+               names_to='model',
+               values_to='fit')
+
+# turn model into a factor to control ordering
+rtcData1 <- rtcData1 %>%
+  mutate(model = factor(model, levels=model_order, labels=model_labels))
+```
+
+
+WRITE DATA TO FILE
+
+```{r}
+#write.csv(rtcData1, 'Exp1_RTCurve_Fits.csv', row.names=F)
+```
+
+4. Plot of RT curve fits for all models
+
+```{r}
+p2 <- ggplot(rtcData1, aes(x=trial_number, y=mean_RT)) +
+  facet_wrap( ~model, nrow=1) +
+  geom_line() +
+  geom_ribbon(aes(ymin=lower, ymax=upper), alpha=0.3) +
+  geom_line(aes(y=fit), col='maroon1', lty=1) +
+  ylab('Mean RT (ms)') +
+  xlab('Trial number') +
+  ggpubr::theme_pubclean() +
+  ggtitle('Exp. 1: Mean Response Time Curve') +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+# png('Exp1_RTCurve.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(rtcData1, model %in% c('Q + gaze', 'softmax(Q) + gaze')),
+#        aes(x=trial_number, y=mean_RT)) +
+#   geom_line() +
+#   geom_ribbon(aes(ymin=lower, ymax=upper), alpha=0.3) +
+#   geom_line(aes(y=fit, col=model), lty=1, lwd=0.8, show.legend=FALSE) +
+#   ylab('Mean RT (ms)') +
+#   xlab('Trial number') +
+#   scale_color_manual(values=c('green', 'maroon1')) +
+#   theme_classic(base_size = 11) +
+#   theme(panel.grid.minor.x = element_blank(),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.minor.y = element_blank(),
+#         panel.grid.major.y = element_blank(),
+#         legend.position = 'inside',
+#         legend.position.inside = c(.65, .2),
+#         legend.title = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+PLOT FOR SI APPENDIX
+
+```{r}
+# png('Exp1_ChoiceRT_All_Models.png', width=9.5, height=5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# grid.arrange(p1, p2, nrow=2, ncol=1)
+# dev.off()
+```
+
+
+
+## Individual choice accuracies
+
+1. Empirical choice accuracies
+
+```{r}
+# accuracy for each participant
+accData <- dat %>%
+  group_by(subject) %>%
+  summarise(acc = mean(correct)) %>% 
+  ungroup()
+```
+
+
+2. Model-simulated accuracies
+
+```{r}
+model1_acc <- sapply(sims1, function(X) mean(X[,1,]))
+model2_acc <- sapply(sims2, function(X) mean(X[,1,]))
+model3_acc <- sapply(sims3, function(X) mean(X[,1,]))
+model4_acc <- sapply(sims4, function(X) mean(X[,1,]))
+model5_acc <- sapply(sims5, function(X) mean(X[,1,]))
+model6_acc <- sapply(sims6, function(X) mean(X[,1,]))
+model7_acc <- sapply(sims7, function(X) mean(X[,1,]))
+
+modelAccData <- data.frame(subject = IDs,
+                           model_1 = model1_acc,
+                           model_2 = model2_acc,
+                           model_3 = model3_acc,
+                           model_4 = model4_acc,
+                           model_5 = model5_acc,
+                           model_6 = model6_acc,
+                           model_7 = model7_acc)
+```
+
+
+3. Merge model predictions with empirical data
+
+```{r}
+accData <- accData %>%
+  left_join(modelAccData, by='subject')
+
+# reshape to long format
+accData1 <- accData %>%
+  pivot_longer(cols=model_1:model_7,
+               names_to='model',
+               values_to='fit')
+
+# turn model into a factor to control ordering
+accData1 <- accData1 %>%
+  mutate(model = factor(model, levels=model_order, labels=model_labels))
+```
+
+
+WRITE DATA TO FILE
+
+```{r}
+#write.csv(accData1, 'Exp1_Accuracy_Fits.csv', row.names=F)
+```
+
+
+4. Plot of empirical vs. fitted choice accuracies
+
+```{r}
+p1 <- ggplot(accData1, aes(x=acc, y=fit)) +
+  facet_wrap( ~model, nrow=1) +
+  geom_abline(slope = 1, intercept=0, lty=3) +
+  geom_smooth(method='lm', col='maroon1') +
+  geom_point(pch=21, fill='grey', alpha=0.5) +
+  ylab('Choice accuracy (model)') +
+  xlab('Choice accuracy (data)') +
+  ggpubr::theme_pubclean() +
+  theme(panel.grid.major.y = element_blank()) +
+  ggpubr::stat_cor(aes(label = ..rr.label..), method='pearson', cex=3) +
+  ggtitle('Exp. 1: Individual Choice Accuracies') +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+# png('Exp1_Accuracy.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(accData1, model=='softmax(Q) + gaze'), aes(x=acc, y=fit)) +
+#   geom_abline(slope = 1, intercept=0, lty=3) +
+#   geom_smooth(method='lm', col='maroon1') +
+#   geom_point(pch=21, fill='grey', alpha=0.5) +
+#   ylab('Choice accuracy (model)') +
+#   xlab('Choice accuracy (data)') +
+#   theme_classic(base_size = 11) +
+#   theme(panel.grid.major.y = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   ggpubr::stat_cor(aes(label = ..rr.label..), method='pearson', cex=3) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+5. Relationships with model parameters
+
+```{r}
+# load model 7 fits
+model7_fits <- readRDS('../modeling/results/model7_fits.RDS')
+
+# extract parameter estimates
+params <- data.frame(t(sapply(model7_fits, function(X) X$optim$bestmem)))
+names(params) <- c('t0','learn_rate','Q_beta','gaze_beta','threshold_sep','upper_bound')
+params$threshold <- params$upper_bound + params$threshold_sep
+
+# add subject ID column
+params$subject <- IDs
+
+# merge with data
+accData <- accData %>%
+  left_join(params, by='subject')
+
+# multiple regression predicting choice accuracy from model parameters
+summary(lm(acc ~ learn_rate + Q_beta + gaze_beta + upper_bound + threshold + t0, data=accData))
+```
+
+
+
+## Individual mean RTs
+
+1. Empirical mean RTs
+
+```{r}
+# mean RTs for each participant
+rtData <- dat %>%
+  filter(RT >= 250, RT <= 10000) %>%
+  group_by(subject) %>%
+  summarise(mean_RT = mean(RT)) %>% 
+  ungroup()
+```
+
+
+2. Model-simulated mean RTs
+
+```{r}
+model1_rt <- sapply(sims1, function(X) mean(X[,2,]))
+model2_rt <- sapply(sims2, function(X) mean(X[,2,]))
+model3_rt <- sapply(sims3, function(X) mean(X[,2,]))
+model4_rt <- sapply(sims4, function(X) mean(X[,2,]))
+model5_rt <- sapply(sims5, function(X) mean(X[,2,]))
+model6_rt <- sapply(sims6, function(X) mean(X[,2,]))
+model7_rt <- sapply(sims7, function(X) mean(X[,2,]))
+
+modelRTData <- data.frame(subject = IDs,
+                          model_1 = model1_rt,
+                          model_2 = model2_rt,
+                          model_3 = model3_rt,
+                          model_4 = model4_rt,
+                          model_5 = model5_rt,
+                          model_6 = model6_rt,
+                          model_7 = model7_rt)
+```
+
+
+3. Merge model predictions with empirical data
+
+```{r}
+rtData <- rtData %>%
+  left_join(modelRTData, by='subject')
+
+# reshape to long format
+rtData1 <- rtData %>%
+  pivot_longer(cols=model_1:model_7,
+               names_to='model',
+               values_to='fit')
+
+# turn model into a factor to control ordering
+rtData1 <- rtData1 %>%
+  mutate(model = factor(model, levels=model_order, labels=model_labels))
+```
+
+
+WRITE DATA TO FILE
+
+```{r}
+#write.csv(rtData1, 'Exp1_MeanRT_Fits.csv', row.names=F)
+```
+
+4. Plot of empirical vs. fitted mean RTs
+
+```{r}
+p2 <- ggplot(rtData1, aes(x=mean_RT, y=fit)) +
+  facet_wrap( ~model, nrow=1) +
+  geom_abline(slope = 1, intercept=0, lty=3) +
+  geom_smooth(method='lm', col='maroon1') +
+  geom_point(pch=21, fill='grey', alpha=0.5) +
+  ylab('Mean RT (model)') +
+  xlab('Mean RT (data)') +
+  ggpubr::theme_pubclean() +
+  theme(panel.grid.major.y = element_blank()) +
+  ggpubr::stat_cor(aes(label = ..rr.label..), method='pearson', cex=3)+
+  ggtitle('Exp. 1: Individual Mean RTs') +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+# png('Exp1_MeanRT.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(rtData1, model=='softmax(Q) + gaze'), aes(x=mean_RT, y=fit)) +
+#   geom_abline(slope = 1, intercept=0, lty=3) +
+#   geom_smooth(method='lm', col='maroon1') +
+#   geom_point(pch=21, fill='grey', alpha=0.5) +
+#   ylab('Mean RT (model)') +
+#   xlab('Mean RT (data)') +
+#   theme_classic(base_size = 11) +
+#   theme(panel.grid.major.y = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   ggpubr::stat_cor(aes(label = ..rr.label..), method='pearson', cex=3) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+PLOT FOR SI APPENDIX
+
+```{r}
+# png('Exp1_IndividChoiceRT_All_Models.png', width=9.5, height=5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# grid.arrange(p1, p2, nrow=2, ncol=1)
+# dev.off()
+```
+
+
+5. Relationships with model parameters
+
+```{r}
+# merge with data
+rtData <- rtData %>%
+  left_join(params, by='subject')
+
+# multiple regression predicting mean RTs from model parameters 
+summary(lm(mean_RT ~ learn_rate + Q_beta + gaze_beta + upper_bound + threshold + t0, data=rtData))
+```
+
+
+
+## Pooled response time distributions
+
+1. Multiply incorrect choice RTs by -1 for plotting RT distributions.
+
+```{r}
+rtData_pooled <- dat %>%
+  filter(RT >= 250, RT <= 10000) %>%
+  mutate(RT_ = ifelse(correct==1, RT, -RT))
+```
+
+
+2. Do the same for simulated RTs after pooling across simulated participants.
+
+```{r}
+sims1_pooled <- abind::abind(sims1, along=1)
+sims1_pooled <- apply(sims1_pooled, 2, c)
+sims1_pooled <- data.frame(sims1_pooled)
+sims1_pooled <- sims1_pooled %>% mutate(RT_ = ifelse(choice==1, RT, -RT))
+
+sims2_pooled <- abind::abind(sims2, along=1)
+sims2_pooled <- apply(sims2_pooled, 2, c)
+sims2_pooled <- data.frame(sims2_pooled)
+sims2_pooled <- sims2_pooled %>% mutate(RT_ = ifelse(choice==1, RT, -RT))
+
+sims3_pooled <- abind::abind(sims3, along=1)
+sims3_pooled <- apply(sims3_pooled, 2, c)
+sims3_pooled <- data.frame(sims3_pooled)
+sims3_pooled <- sims3_pooled %>% mutate(RT_ = ifelse(choice==1, RT, -RT))
+
+sims4_pooled <- abind::abind(sims4, along=1)
+sims4_pooled <- apply(sims4_pooled, 2, c)
+sims4_pooled <- data.frame(sims4_pooled)
+sims4_pooled <- sims4_pooled %>% mutate(RT_ = ifelse(choice==1, RT, -RT))
+
+sims5_pooled <- abind::abind(sims5, along=1)
+sims5_pooled <- apply(sims5_pooled, 2, c)
+sims5_pooled <- data.frame(sims5_pooled)
+sims5_pooled <- sims5_pooled %>% mutate(RT_ = ifelse(choice==1, RT, -RT))
+
+sims6_pooled <- abind::abind(sims6, along=1)
+sims6_pooled <- apply(sims6_pooled, 2, c)
+sims6_pooled <- data.frame(sims6_pooled)
+sims6_pooled <- sims6_pooled %>% mutate(RT_ = ifelse(choice==1, RT, -RT))
+
+sims7_pooled <- abind::abind(sims7, along=1)
+sims7_pooled <- apply(sims7_pooled, 2, c)
+sims7_pooled <- data.frame(sims7_pooled)
+sims7_pooled <- sims7_pooled %>% mutate(RT_ = ifelse(choice==1, RT, -RT))
+```
+
+
+3. Plot correct and incorrect RT distributions with model simulations overlaid (SI APPENDIX)
+
+
+```{r}
+# png('Exp1_RTDists_All_Models.png', width=9, height=5, units='in', res=300)
+# par(mfrow=c(2,4), mar=c(4.5,2,1.5,1))
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='', border='grey50', col='grey', yaxs='i',
+#      main='Q model', cex.main=0.9, font.main=2)
+# lines(density(sims1_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='', border='grey50', col='grey', yaxs='i',
+#      main='Q * gaze model', cex.main=0.9, font.main=2)
+# lines(density(sims2_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='', border='grey50', col='grey', yaxs='i',
+#      main='Q + gaze model', cex.main=0.9, font.main=2)
+# lines(density(sims3_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='', border='grey50', col='grey', yaxs='i',
+#      main='softmax(Q) model', cex.main=0.9, font.main=2)
+# lines(density(sims4_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='', border='grey50', col='grey', yaxs='i',
+#      main='softmax(Q*gaze) model', cex.main=0.9, font.main=2)
+# lines(density(sims5_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='', border='grey50', col='grey', yaxs='i',
+#      main='softmax(Q)*gaze model', cex.main=0.9, font.main=2)
+# lines(density(sims6_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='', border='grey50', col='grey', yaxs='i',
+#      main='softmax(Q) + gaze model', cex.main=0.9, font.main=2)
+# lines(density(sims7_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# dev.off()
+```
+
+PLOT FOR MODEL 7 ONLY
+
+```{r}
+# png('Exp1_RTdists.png', width=3.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# hist(rtData_pooled$RT_, nclass=50, freq=F, yaxt='n', ylab='', xlab='RT (ms)', border='grey50', col='grey', yaxs='i', main='', ylim=c(0, .00035))
+# lines(density(sims7_pooled$RT_), col='maroon1', lwd=2, yaxt='n')
+# abline(v=0, lty=2)
+# text(x=6000, y=.00015, label='Correct\nchoices')
+# text(x=-6000, y=.00015, label='Incorrect\nchoices')
+# dev.off()
+```
+
+
+
+
+4. Clean up
+
+```{r}
+rm(sims1_pooled, sims2_pooled, sims3_pooled, sims4_pooled, sims5_pooled,
+   sims6_pooled, sims7_pooled)
+gc()
+```
+
+
+## Choice accuracy as a function of relative gaze to the correct option
+
+1. Start by computing each subject's choice accuracy for each of the five gaze buckets (i.e., quintiles), averaging across all learning trials.
+
+```{r}
+accByGazeData <- dat %>%
+  group_by(subject, gaze_bucket) %>%
+  summarise(acc = mean(correct),
+            n = n()) %>%
+  ungroup()
+```
+
+
+2. Now do the same for the models.
+
+```{r}
+# Step 1: For each subject, compute accuracy within each gaze bucket for each of the 100 simulation runs
+# Returns a 5 (gaze buckets) x 100 (runs) x 83 (subjects) array
+model1_accByGaze <- sapply(1:length(sims1), function(i) apply(sims1[[i]][,1,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model2_accByGaze <- sapply(1:length(sims2), function(i) apply(sims2[[i]][,1,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model3_accByGaze <- sapply(1:length(sims3), function(i) apply(sims3[[i]][,1,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model4_accByGaze <- sapply(1:length(sims4), function(i) apply(sims4[[i]][,1,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model5_accByGaze <- sapply(1:length(sims5), function(i) apply(sims5[[i]][,1,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model6_accByGaze <- sapply(1:length(sims6), function(i) apply(sims6[[i]][,1,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model7_accByGaze <- sapply(1:length(sims7), function(i) apply(sims7[[i]][,1,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+
+
+# Step 2: Average across simulation runs
+model1_accByGaze <- apply(model1_accByGaze, c(1,3), FUN=mean)
+model2_accByGaze <- apply(model2_accByGaze, c(1,3), FUN=mean)
+model3_accByGaze <- apply(model3_accByGaze, c(1,3), FUN=mean)
+model4_accByGaze <- apply(model4_accByGaze, c(1,3), FUN=mean)
+model5_accByGaze <- apply(model5_accByGaze, c(1,3), FUN=mean)
+model6_accByGaze <- apply(model6_accByGaze, c(1,3), FUN=mean)
+model7_accByGaze <- apply(model7_accByGaze, c(1,3), FUN=mean)
+```
+
+
+
+3. Merge the model data with empirical data
+
+```{r}
+# Step 1: flatten model simulations to a vector (gaze buckets cycling faster than subjects)
+model1_accByGaze <- c(model1_accByGaze)
+model2_accByGaze <- c(model2_accByGaze)
+model3_accByGaze <- c(model3_accByGaze)
+model4_accByGaze <- c(model4_accByGaze)
+model5_accByGaze <- c(model5_accByGaze)
+model6_accByGaze <- c(model6_accByGaze)
+model7_accByGaze <- c(model7_accByGaze)
+
+# Step 2: create data frame 
+modelAccByGaze <- data.frame(subject = rep(IDs, each=5),
+                             gaze_bucket = rep(1:5, times=length(IDs)),
+                             model_1 = model1_accByGaze,
+                             model_2 = model2_accByGaze,
+                             model_3 = model3_accByGaze,
+                             model_4 = model4_accByGaze,
+                             model_5 = model5_accByGaze,
+                             model_6 = model6_accByGaze,
+                             model_7 = model7_accByGaze)
+
+# Step 3: merge with empirical data
+accByGazeData <- accByGazeData %>%
+  left_join(modelAccByGaze, by=c('subject', 'gaze_bucket'))
+
+# Step 4: reshape to long format
+accByGazeData1 <- accByGazeData %>%
+  pivot_longer(cols=model_1:model_7,
+               names_to='model',
+               values_to='fit')
+
+# Step 5: turn model into a factor to control ordering
+accByGazeData1 <- accByGazeData1 %>%
+  mutate(model = factor(model, levels=model_order, labels=model_labels))
+```
+
+
+
+
+4. Average across subjects
+
+
+```{r}
+accByGazeData2 <- accByGazeData1 %>%
+  group_by(gaze_bucket, model) %>%
+  summarise(mean_acc = mean(acc),
+            sd_acc = sd(acc),
+            n = n(),
+            mean_fit = mean(fit)) %>%
+  ungroup() %>%
+  mutate(se = sd_acc / sqrt(n),
+         upper = mean_acc + se,
+         lower = mean_acc - se) 
+```
+
+
+WRITE DATA TO FILE
+
+```{r}
+#write.csv(accByGazeData2, 'Exp1_AccByGazeQuintile_Fits.csv', row.names=F)
+```
+
+
+
+5. Plot mean and predicted choice accuracy across gaze buckets.
+
+```{r}
+p1 <- ggplot(accByGazeData2, aes(x=gaze_bucket, y=mean_acc)) +
+  facet_wrap( ~model, nrow=1) +
+  geom_bar(stat='identity', fill='grey70') +
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=0.2) +
+  geom_line(aes(y=mean_fit), col='maroon1', lty=1) +
+  geom_point(aes(y=mean_fit), col='maroon1', pch=1) +
+  ylab('Mean choice accuracy') +
+  xlab('Excess relative gaze on the correct option (quintiles)') +
+  scale_y_continuous(limits=c(0,1)) +
+  ggpubr::theme_pubclean()  +
+  ggtitle('Exp. 1: Gaze Effects on Accuracy') +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+# png('Exp1_AccByGazeQuintile.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(accByGazeData2, model %in% c('softmax(Q)', 'softmax(Q) + gaze')), 
+#        aes(x=gaze_bucket, y=mean_acc)) +
+#   geom_line() +
+#   geom_errorbar(aes(ymin=lower, ymax=upper), width=0.2) +
+#   geom_point(stat='identity', fill='grey70', pch=21) +
+#   geom_line(aes(y=mean_fit, col=model), lty=2) +
+#   geom_point(aes(y=mean_fit, col=model), pch=1, show.legend=FALSE) +
+#   ylab('Mean choice accuracy') +
+#   xlab('Excess prop. gaze (quintiles)') +
+#   scale_y_continuous(limits=c(0,1)) +
+#   theme_classic(base_size = 11) +
+#   theme(legend.position = 'inside',
+#         legend.position.inside = c(.65, .2),
+#         legend.title = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   scale_color_manual(values=c('deepskyblue', 'maroon1')) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+
+## Choice response time as a function of relative gaze to the correct option
+
+
+1. Start by computing each subject's mean RT for each of the five gaze buckets (quintiles), averaging across all learning trials.
+
+```{r}
+RTByGazeData <- dat %>%
+  filter(RT >= 250, RT <= 10000) %>%
+  group_by(subject, gaze_bucket) %>%
+  summarise(mean_RT = mean(RT),
+            n = n()) %>%
+  ungroup()
+```
+
+
+2. Now do the same for the models.
+
+```{r}
+# Step 1: For each subject, compute mean RT within each gaze bucket for each of the 100 simulation runs
+# Returns a 5 (gaze buckets) x 100 (runs) x 83 (subjects) array
+model1_RTByGaze <- sapply(1:length(sims1), function(i) apply(sims1[[i]][,2,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model2_RTByGaze <- sapply(1:length(sims2), function(i) apply(sims2[[i]][,2,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model3_RTByGaze <- sapply(1:length(sims3), function(i) apply(sims3[[i]][,2,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model4_RTByGaze <- sapply(1:length(sims4), function(i) apply(sims4[[i]][,2,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model5_RTByGaze <- sapply(1:length(sims5), function(i) apply(sims5[[i]][,2,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model6_RTByGaze <- sapply(1:length(sims6), function(i) apply(sims6[[i]][,2,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+model7_RTByGaze <- sapply(1:length(sims7), function(i) apply(sims7[[i]][,2,], 2, FUN=function(x_j) {
+  aggregate(x_j ~ factor(datasets[[i]]$gaze_bucket), FUN=mean)[,2]}), simplify='array')
+
+
+# Step 2: Average across simulation runs
+model1_RTByGaze <- apply(model1_RTByGaze, c(1,3), FUN=mean)
+model2_RTByGaze <- apply(model2_RTByGaze, c(1,3), FUN=mean)
+model3_RTByGaze <- apply(model3_RTByGaze, c(1,3), FUN=mean)
+model4_RTByGaze <- apply(model4_RTByGaze, c(1,3), FUN=mean)
+model5_RTByGaze <- apply(model5_RTByGaze, c(1,3), FUN=mean)
+model6_RTByGaze <- apply(model6_RTByGaze, c(1,3), FUN=mean)
+model7_RTByGaze <- apply(model7_RTByGaze, c(1,3), FUN=mean)
+```
+
+
+3. Merge the model data with empirical data
+
+```{r}
+# Step 1: flatten model simulations to a vector (gaze buckets cycling faster than subjects)
+model1_RTByGaze <- c(model1_RTByGaze)
+model2_RTByGaze <- c(model2_RTByGaze)
+model3_RTByGaze <- c(model3_RTByGaze)
+model4_RTByGaze <- c(model4_RTByGaze)
+model5_RTByGaze <- c(model5_RTByGaze)
+model6_RTByGaze <- c(model6_RTByGaze)
+model7_RTByGaze <- c(model7_RTByGaze)
+
+# Step 2: create data frame 
+modelRTByGaze <- data.frame(subject = rep(IDs, each=5),
+                             gaze_bucket = rep(1:5, times=length(IDs)),
+                             model_1 = model1_RTByGaze,
+                             model_2 = model2_RTByGaze,
+                             model_3 = model3_RTByGaze,
+                             model_4 = model4_RTByGaze,
+                             model_5 = model5_RTByGaze,
+                             model_6 = model6_RTByGaze,
+                             model_7 = model7_RTByGaze)
+
+# Step 3: merge with empirical data
+RTByGazeData <- RTByGazeData %>%
+  left_join(modelRTByGaze, by=c('subject', 'gaze_bucket'))
+
+# Step 4: reshape to long format
+RTByGazeData1 <- RTByGazeData %>%
+  pivot_longer(cols=model_1:model_7,
+               names_to='model',
+               values_to='fit')
+
+# Step 5: turn model into a factor to control ordering
+RTByGazeData1 <- RTByGazeData1 %>%
+  mutate(model = factor(model, levels=model_order, labels=model_labels))
+```
+
+
+4. Average across subjects
+
+
+```{r}
+RTByGazeData2 <- RTByGazeData1 %>%
+  group_by(gaze_bucket, model) %>%
+  summarise(avg_mean_RT = mean(mean_RT),
+            sd_mean_RT = sd(mean_RT),
+            n = n(),
+            mean_fit = mean(fit)) %>%
+  ungroup() %>%
+  mutate(se = sd_mean_RT / sqrt(n),
+         upper = avg_mean_RT + se,
+         lower = avg_mean_RT - se) 
+```
+
+
+WRITE DATA TO FILE
+
+```{r}
+#write.csv(RTByGazeData2, 'Exp1_MeanRTByGazeQuintile_Fits.csv', row.names=F)
+```
+
+
+5. Plot mean and predicted choice RTs across gaze buckets.
+
+```{r}
+p2 <- ggplot(RTByGazeData2, aes(x=gaze_bucket, y=avg_mean_RT)) +
+  facet_wrap( ~model, nrow=1) +
+  geom_bar(stat='identity', fill='grey70') +
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=0.2) +
+  geom_line(aes(y=mean_fit), col='maroon1', lty=1) +
+  geom_point(aes(y=mean_fit), col='maroon1', pch=1) +
+  ylab('Mean RT (ms)') +
+  xlab('Excess relative gaze on the correct option (quintiles)') +
+  scale_y_continuous(limits=c(0,3000)) +
+  ggpubr::theme_pubclean() +
+  ggtitle('Exp. 1: Gaze Effects on Mean RT') +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+# png('Exp1_MeanRTByGazeQuintile.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(RTByGazeData2, model %in% c('softmax(Q)', 'softmax(Q) + gaze')),
+#        aes(x=gaze_bucket, y=avg_mean_RT)) +
+#   geom_line() +
+#   geom_errorbar(aes(ymin=lower, ymax=upper), width=0.2) +
+#   geom_point(stat='identity', fill='grey70', pch=21) +
+#   geom_line(aes(y=mean_fit, col=model), lty=2, show.legend=FALSE) +
+#   geom_point(aes(y=mean_fit, col=model), pch=1, show.legend=FALSE) +
+#   ylab('Mean RT (ms)') +
+#   xlab('Excess prop. gaze (quintiles)') +
+#   scale_y_continuous(limits=c(2000, 3000)) +
+#   theme_classic(base_size = 11) +
+#   theme(legend.position = 'inside',
+#         legend.position.inside = c(.65, .2),
+#         legend.title = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   scale_color_manual(values=c('deepskyblue', 'maroon1')) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+PLOT FOR SI APPENDIX
+
+```{r}
+# png('Exp1_GazeEffects_All_Models.png', width=9.5, height=5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# grid.arrange(p1, p2, nrow=2, ncol=1)
+# dev.off()
+```
+
+
+6. Load model fits and extract the estimated gaze parameters
+
+```{r}
+model7_fits <- readRDS('../modeling/results/model7_fits.RDS')
+
+params <- sapply(model7_fits, function(X) X$optim$bestmem)
+
+gaze_params <- data.frame(subject=IDs, gaze_beta=params[4,])
+
+```
+
+
+
+7. Merge parameter data with the individual accuracy x gaze quintile data
+
+```{r}
+accByGazeData1 <- accByGazeData1 %>%
+  left_join(gaze_params, by='subject')
+```
+
+
+8. Gaze effect on accuracy: (Acc. in 5th gaze quintile) - (Acc. in 1st gaze quintile)
+
+```{r}
+gazeEffectData <- accByGazeData1 %>%
+  mutate(contrast_weight = case_when(gaze_bucket == 1 ~ -1,
+                                     gaze_bucket == 5 ~ 1,
+                                     .default=0)) %>%
+  group_by(subject, gaze_beta, model) %>%
+  summarise(gaze_effect = sum(contrast_weight * acc),
+            fitted_effect = sum(contrast_weight * fit)) %>%
+  ungroup()
+```
+
+
+WRITE DATA TO FILE
+
+```{r}
+#write.csv(gazeEffectData, 'Exp1_GazeEffect_Fits.csv', row.names=F)
+```
+
+9. Plot of empirical vs. fitted gaze effects
+
+```{r}
+# ggplot(gazeEffectData, aes(x=gaze_effect, y=fitted_effect)) +
+#   facet_wrap( ~model, nrow=2) +
+#   geom_abline(slope = 1, intercept=0, lty=3) +
+#   geom_smooth(method='lm', col='green') +
+#   geom_point(pch=21, fill='grey', alpha=0.5) +
+#   ylab('Gaze effect on accuracy (model)') +
+#   xlab('Gaze effect on accuracy (data) ') +
+#   ggpubr::theme_pubclean() +
+#   theme(panel.grid.major.y = element_blank()) +
+#   ggpubr::stat_cor(aes(label = ..rr.label..), method='pearson', cex=3)
+```
+
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+# png('Exp1_GazeEffects.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(gazeEffectData, model=='softmax(Q) + gaze'), aes(x=gaze_effect, y=fitted_effect)) +
+#   geom_abline(slope = 1, intercept=0, lty=3) +
+#   geom_smooth(method='lm', col='maroon1') +
+#   geom_point(pch=21, fill='grey', alpha=0.5) +
+#   ylab(expression(paste(Delta, 'accuracy'['Q5 - Q1'], ' (model)'))) +
+#   xlab(expression(paste(Delta, 'accuracy'['Q5 - Q1'], ' (data)'))) +
+#   theme_classic(base_size = 11) +
+#   theme(panel.grid.major.y = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   ggpubr::stat_cor(aes(label = ..rr.label..), method='pearson', cex=3) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+PLOT FOR MAIN MANUSCRIPT
+
+```{r}
+#png('Exp1_GazeEffects2.png', width=2.5, height=2.5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(subset(gazeEffectData, model=='softmax(Q) + gaze'), aes(x=gaze_effect, y=gaze_beta)) +
+#   geom_smooth(method='lm', col='maroon1') +
+#   geom_point(pch=21, fill='grey', alpha=0.5) +
+#   #ylab(expression(beta['gaze'])) +
+#   xlab(expression(paste(Delta, 'accuracy'['Q5 - Q1'], ' (data)'))) +
+#   theme_classic(base_size = 11) +
+#   theme(panel.grid.major.y = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   ggpubr::stat_cor(aes(label = ..rr.label..), method='pearson', cex=3) +
+#   ggtitle('Exp. 1')
+#dev.off()
+```
+
+
+
+## Model comparison 
+
+1. Load accumulative one-step-ahead prediction error (APE) results for each model. These were run in batches.
+
+```{r}
+model1_APE_results <- lapply(1:20, FUN=function(i) {
+  readRDS(paste0('../modeling/results/model1_batch', i, '_APE.RDS'))
+})
+
+model2_APE_results <- lapply(1:20, FUN=function(i) {
+  readRDS(paste0('../modeling/results/model2_batch', i, '_APE.RDS'))
+})
+
+model3_APE_results <- lapply(1:20, FUN=function(i) {
+  readRDS(paste0('../modeling/results/model3_batch', i, '_APE.RDS'))
+})
+
+model4_APE_results <- lapply(1:20, FUN=function(i) {
+  readRDS(paste0('../modeling/results/model4_batch', i, '_APE.RDS'))
+})
+
+model5_APE_results <- lapply(1:20, FUN=function(i) {
+  readRDS(paste0('../modeling/results/model5_batch', i, '_APE.RDS'))
+})
+
+model6_APE_results <- lapply(1:20, FUN=function(i) {
+  readRDS(paste0('../modeling/results/model6_batch', i, '_APE.RDS'))
+})
+
+model7_APE_results <- lapply(1:20, FUN=function(i) {
+  readRDS(paste0('../modeling/results/model7_batch', i, '_APE.RDS'))
+})
+
+
+model1_APE_results <- unlist(model1_APE_results, recursive = FALSE)
+model2_APE_results <- unlist(model2_APE_results, recursive = FALSE)
+model3_APE_results <- unlist(model3_APE_results, recursive = FALSE)
+model4_APE_results <- unlist(model4_APE_results, recursive = FALSE)
+model5_APE_results <- unlist(model5_APE_results, recursive = FALSE)
+model6_APE_results <- unlist(model6_APE_results, recursive = FALSE)
+model7_APE_results <- unlist(model7_APE_results, recursive = FALSE)
+```
+
+
+2. Extract the one-step-ahead log-likelihoods, recode infinite LLs as NAs (there were very few of these), and compute the difference in APE relative to the winning model (softmax(Q) + gaze) for each participant.
+
+```{r}
+# extract one-step-ahead LLs (60 [trials] x 83 [subjects] matrix)
+model1_LL <- sapply(model1_APE_results, function(X) X$LL)
+model2_LL <- sapply(model2_APE_results, function(X) X$LL)
+model3_LL <- sapply(model3_APE_results, function(X) X$LL)
+model4_LL <- sapply(model4_APE_results, function(X) X$LL)
+model5_LL <- sapply(model5_APE_results, function(X) X$LL)
+model6_LL <- sapply(model6_APE_results, function(X) X$LL)
+model7_LL <- sapply(model7_APE_results, function(X) X$LL)
+
+# recode infinite LLs
+model1_LL[is.infinite(model1_LL)] <- NA
+model2_LL[is.infinite(model2_LL)] <- NA
+model3_LL[is.infinite(model3_LL)] <- NA
+model4_LL[is.infinite(model4_LL)] <- NA
+model5_LL[is.infinite(model5_LL)] <- NA
+model6_LL[is.infinite(model6_LL)] <- NA
+model7_LL[is.infinite(model7_LL)] <- NA
+
+# compute difference in APE relative to the winning model (Model 7)
+# doing it this way ensures that if one model produced an infinite LL on a particular trial, 
+# the trial will not be counted for either of the models being compared (both will have NA value for that trial) 
+N <- length(IDs)
+APE_data <- data.frame(model = rep(model_order, each=N),
+                       subject = rep(IDs, length(model_order)),
+                       APE_diff = c( colSums( (-model1_LL) - (-model7_LL) , na.rm=TRUE),
+                                     colSums( (-model2_LL) - (-model7_LL) , na.rm=TRUE),
+                                     colSums( (-model3_LL) - (-model7_LL) , na.rm=TRUE),
+                                     colSums( (-model4_LL) - (-model7_LL) , na.rm=TRUE),
+                                     colSums( (-model5_LL) - (-model7_LL) , na.rm=TRUE),
+                                     colSums( (-model6_LL) - (-model7_LL) , na.rm=TRUE),
+                                     colSums( (-model7_LL) - (-model7_LL) , na.rm=TRUE)))
+
+APE_diff_data <- APE_data %>%
+  mutate(model = factor(model, levels=model_order, labels=model_labels)) %>%
+  group_by(model) %>%
+  summarise(mean_APE_diff = mean(APE_diff),
+            sd_APE_diff = sd(APE_diff),
+            n = n()) %>%
+  ungroup() %>%
+  mutate(se = sd_APE_diff / sqrt(n),
+         lower = mean_APE_diff - se,
+         upper = mean_APE_diff + se)
+
+APE_diff_data$label <- c('***', '**', '***', '***', '***', '**', '')
+
+```
+
+PLOT FOR MANUSCRIPT
+
+```{r}
+# png('APE_Exp1.png', width=3.5, height=3, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(APE_diff_data, aes(x=model, y=mean_APE_diff)) +
+#   geom_bar(fill='maroon1', stat='identity', width=0.5, show.legend=FALSE) +
+#   geom_errorbar(aes(ymin=lower, ymax=upper), width=0.2) +
+#   ylab(expression(paste(Delta, 'APE (model i ', '\U2212', ' model 7)'))) +
+#   xlab('Model') +
+#   theme_classic(base_size=11) +
+#   theme(axis.text.x = element_text(angle=45, vjust=1, hjust=1),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   scale_y_continuous(limits=c(0, 18), expand=c(0,0)) +
+#   geom_text(aes(y=upper+1.5, label=label)) +
+#   ggtitle('Exp. 1')
+# dev.off()
+```
+
+
+```{r}
+with(APE_data, t.test(APE_diff[model=='model_1']))
+```
+
+```{r}
+with(APE_data, t.test(APE_diff[model=='model_2']))
+```
+
+```{r}
+with(APE_data, t.test(APE_diff[model=='model_3']))
+```
+```{r}
+with(APE_data, t.test(APE_diff[model=='model_4']))
+```
+
+```{r}
+with(APE_data, t.test(APE_diff[model=='model_5']))
+```
+```{r}
+with(APE_data, t.test(APE_diff[model=='model_6']))
+```
+
+## Individual differences
+
+1. Load individual-level coefficients from LMM1 and merge with APE data set.
+
+```{r}
+LMM1_estimates <- read.csv('exp1_LMM1_individual_estimates.csv', header=T, row.names=1)
+LMM1_estimates$subject <- as.integer(rownames(LMM1_estimates))
+
+APE_data1 <- APE_data %>%
+  left_join(LMM1_estimates, by='subject')
+```
+
+2. Use individual-level effects of EV difference and overall EV on log-RT (from LMM1) to predict APE advantage for Model 7 over Model 3. 
+
+```{r}
+summary(lm(APE_diff ~ ev_difference_z + OEV_z, 
+           data=subset(APE_data1, model=='model_3')))
+```
+
+3. Load individual-level coefficients from GLMM3 and merge with APE data set.
+
+```{r}
+GLMM3_estimates <- read.csv('exp1_GLMM3_individual_estimates.csv', header=T, row.names=1)
+GLMM3_estimates$subject <- as.integer(rownames(GLMM3_estimates))
+
+APE_data2 <- APE_data %>%
+  left_join(GLMM3_estimates, by='subject')
+```
+
+4. Correlate individual-level overall-EV * gaze interaction effects on choice (from GLMM3) with APE advantage for Model 7 over Model 2.
+
+```{r}
+with(subset(APE_data2, model=='model_2'), cor.test(gaze_diff_z.OEV_z, APE_diff))
+```
+
+
+## Parameter recovery
+
+1. Load parameter recovery results and organize into data frame.
+
+```{r}
+paramRecoveryResults <- readRDS('../modeling/results/model7_paramRecovery.RDS')
+
+# decision threshold = start point upper bound + threshold separation
+paramRecoveryResults[['generating']] <- cbind(paramRecoveryResults[['generating']], 
+                                              paramRecoveryResults[['generating']][,5] + 
+                                                paramRecoveryResults[['generating']][,6])
+
+paramRecoveryResults[['recovered']] <- cbind(paramRecoveryResults[['recovered']], 
+                                              paramRecoveryResults[['recovered']][,5] + 
+                                                paramRecoveryResults[['recovered']][,6])
+
+param_names <- c('Learning rate', 'Q drift scaling', 'Gaze drift scaling',
+                 'Start point upper bound', 'Decision threshold', 'Non-decision time')
+
+paramRecoveryData <- data.frame(
+  param = factor(rep(param_names, each=100), levels=param_names),
+  generating = c(paramRecoveryResults[['generating']][,c(2,3,4,6,7,1)]),
+  recovered = c(paramRecoveryResults[['recovered']][,c(2,3,4,6,7,1)])
+)
+```
+
+
+2. Plot relationships between generating and recovered parameters (SI APPENDIX)
+
+```{r}
+#png('Exp1_param_recovery.png', width=6, height=5, units='in', res=300)
+# par(mar=c(4.5,1,1.5,1))
+# ggplot(data=paramRecoveryData, aes(x=generating, y=recovered)) +
+#   facet_wrap(~ param, nrow=2, scales='free') +
+#   geom_abline(slope = 1, intercept=0, lty=3) +
+#   geom_smooth(method='lm', col='maroon1') +
+#   geom_point(pch=21, fill='grey', alpha=0.5) +
+#   ylab('Recovered') +
+#   xlab('True') +
+#   theme_classic(base_size = 11) +
+#   theme(panel.grid.major.y = element_blank(),
+#         plot.title = element_text(hjust=0.5, size=11)) +
+#   ggpubr::stat_cor(aes(label = ..r.label..), method='pearson', cor.coef.name = 'r', cex=3,
+#                    label.x.npc = .7, label.y.npc = 'bottom') +
+#   ggtitle('Exp. 1 Parameter Recovery')
+#dev.off()
+```
+
+
+

@@ -1,0 +1,351 @@
+"subject","acc","model","fit"
+1,0.8,"Q",0.672
+1,0.8,"Q * gaze",0.6935
+1,0.8,"Q + gaze",0.741
+1,0.8,"softmax(Q)",0.8275
+1,0.8,"softmax(Q * gaze)",0.744
+1,0.8,"softmax(Q) * gaze",0.839
+1,0.8,"softmax(Q) + gaze",0.775
+2,1,"Q",0.85
+2,1,"Q * gaze",0.8295
+2,1,"Q + gaze",0.8235
+2,1,"softmax(Q)",0.9265
+2,1,"softmax(Q * gaze)",0.877
+2,1,"softmax(Q) * gaze",0.9055
+2,1,"softmax(Q) + gaze",0.8915
+3,0.8,"Q",0.784
+3,0.8,"Q * gaze",0.5905
+3,0.8,"Q + gaze",0.7935
+3,0.8,"softmax(Q)",0.8535
+3,0.8,"softmax(Q * gaze)",0.648
+3,0.8,"softmax(Q) * gaze",0.585
+3,0.8,"softmax(Q) + gaze",0.8715
+4,0.55,"Q",0.704
+4,0.55,"Q * gaze",0.616
+4,0.55,"Q + gaze",0.6905
+4,0.55,"softmax(Q)",0.7335
+4,0.55,"softmax(Q * gaze)",0.6855
+4,0.55,"softmax(Q) * gaze",0.6435
+4,0.55,"softmax(Q) + gaze",0.768
+6,0.95,"Q",0.8865
+6,0.95,"Q * gaze",0.91
+6,0.95,"Q + gaze",0.899
+6,0.95,"softmax(Q)",0.954
+6,0.95,"softmax(Q * gaze)",0.928
+6,0.95,"softmax(Q) * gaze",0.928
+6,0.95,"softmax(Q) + gaze",0.92
+7,0.95,"Q",0.895
+7,0.95,"Q * gaze",0.6245
+7,0.95,"Q + gaze",0.907
+7,0.95,"softmax(Q)",0.985
+7,0.95,"softmax(Q * gaze)",0.723
+7,0.95,"softmax(Q) * gaze",0.645
+7,0.95,"softmax(Q) + gaze",0.986
+8,1,"Q",0.8335
+8,1,"Q * gaze",0.8075
+8,1,"Q + gaze",0.8215
+8,1,"softmax(Q)",0.923
+8,1,"softmax(Q * gaze)",0.8715
+8,1,"softmax(Q) * gaze",0.8845
+8,1,"softmax(Q) + gaze",0.9005
+9,0.95,"Q",0.8735
+9,0.95,"Q * gaze",0.8305
+9,0.95,"Q + gaze",0.811
+9,0.95,"softmax(Q)",0.9375
+9,0.95,"softmax(Q * gaze)",0.908
+9,0.95,"softmax(Q) * gaze",0.9075
+9,0.95,"softmax(Q) + gaze",0.8315
+10,1,"Q",0.762
+10,1,"Q * gaze",0.652
+10,1,"Q + gaze",0.775
+10,1,"softmax(Q)",0.902
+10,1,"softmax(Q * gaze)",0.6625
+10,1,"softmax(Q) * gaze",0.714
+10,1,"softmax(Q) + gaze",0.913
+11,0.55,"Q",0.5175
+11,0.55,"Q * gaze",0.5305
+11,0.55,"Q + gaze",0.507
+11,0.55,"softmax(Q)",0.5295
+11,0.55,"softmax(Q * gaze)",0.562
+11,0.55,"softmax(Q) * gaze",0.545
+11,0.55,"softmax(Q) + gaze",0.5175
+12,0.95,"Q",0.806
+12,0.95,"Q * gaze",0.7175
+12,0.95,"Q + gaze",0.816
+12,0.95,"softmax(Q)",0.924
+12,0.95,"softmax(Q * gaze)",0.725
+12,0.95,"softmax(Q) * gaze",0.7505
+12,0.95,"softmax(Q) + gaze",0.932
+13,0.85,"Q",0.7335
+13,0.85,"Q * gaze",0.7525
+13,0.85,"Q + gaze",0.721
+13,0.85,"softmax(Q)",0.7595
+13,0.85,"softmax(Q * gaze)",0.8165
+13,0.85,"softmax(Q) * gaze",0.7615
+13,0.85,"softmax(Q) + gaze",0.7715
+14,0.65,"Q",0.6645
+14,0.65,"Q * gaze",0.584
+14,0.65,"Q + gaze",0.688
+14,0.65,"softmax(Q)",0.6975
+14,0.65,"softmax(Q * gaze)",0.6015
+14,0.65,"softmax(Q) * gaze",0.6285
+14,0.65,"softmax(Q) + gaze",0.7035
+16,1,"Q",0.7895
+16,1,"Q * gaze",0.7515
+16,1,"Q + gaze",0.8035
+16,1,"softmax(Q)",0.92
+16,1,"softmax(Q * gaze)",0.762
+16,1,"softmax(Q) * gaze",0.7215
+16,1,"softmax(Q) + gaze",0.785
+17,0.75,"Q",0.783
+17,0.75,"Q * gaze",0.6385
+17,0.75,"Q + gaze",0.7645
+17,0.75,"softmax(Q)",0.82
+17,0.75,"softmax(Q * gaze)",0.62
+17,0.75,"softmax(Q) * gaze",0.7095
+17,0.75,"softmax(Q) + gaze",0.784
+18,1,"Q",0.8765
+18,1,"Q * gaze",0.8525
+18,1,"Q + gaze",0.8485
+18,1,"softmax(Q)",0.9785
+18,1,"softmax(Q * gaze)",0.885
+18,1,"softmax(Q) * gaze",0.9395
+18,1,"softmax(Q) + gaze",0.955
+19,1,"Q",0.884
+19,1,"Q * gaze",0.9135
+19,1,"Q + gaze",0.8925
+19,1,"softmax(Q)",0.971
+19,1,"softmax(Q * gaze)",0.894
+19,1,"softmax(Q) * gaze",0.9605
+19,1,"softmax(Q) + gaze",0.9665
+20,0.8,"Q",0.876
+20,0.8,"Q * gaze",0.8745
+20,0.8,"Q + gaze",0.8505
+20,0.8,"softmax(Q)",0.943
+20,0.8,"softmax(Q * gaze)",0.936
+20,0.8,"softmax(Q) * gaze",0.9115
+20,0.8,"softmax(Q) + gaze",0.893
+22,1,"Q",0.9245
+22,1,"Q * gaze",0.8725
+22,1,"Q + gaze",0.91
+22,1,"softmax(Q)",0.9845
+22,1,"softmax(Q * gaze)",0.8905
+22,1,"softmax(Q) * gaze",0.937
+22,1,"softmax(Q) + gaze",0.969
+23,1,"Q",0.8105
+23,1,"Q * gaze",0.752
+23,1,"Q + gaze",0.8085
+23,1,"softmax(Q)",0.9575
+23,1,"softmax(Q * gaze)",0.759
+23,1,"softmax(Q) * gaze",0.8205
+23,1,"softmax(Q) + gaze",0.9675
+24,0.9,"Q",0.7735
+24,0.9,"Q * gaze",0.6825
+24,0.9,"Q + gaze",0.7295
+24,0.9,"softmax(Q)",0.8185
+24,0.9,"softmax(Q * gaze)",0.7305
+24,0.9,"softmax(Q) * gaze",0.691
+24,0.9,"softmax(Q) + gaze",0.7525
+25,0.7,"Q",0.655
+25,0.7,"Q * gaze",0.6225
+25,0.7,"Q + gaze",0.67
+25,0.7,"softmax(Q)",0.752
+25,0.7,"softmax(Q * gaze)",0.6945
+25,0.7,"softmax(Q) * gaze",0.6795
+25,0.7,"softmax(Q) + gaze",0.787
+26,0.55,"Q",0.6675
+26,0.55,"Q * gaze",0.502
+26,0.55,"Q + gaze",0.5845
+26,0.55,"softmax(Q)",0.7915
+26,0.55,"softmax(Q * gaze)",0.561
+26,0.55,"softmax(Q) * gaze",0.531
+26,0.55,"softmax(Q) + gaze",0.621
+28,0.95,"Q",0.8355
+28,0.95,"Q * gaze",0.6825
+28,0.95,"Q + gaze",0.8185
+28,0.95,"softmax(Q)",0.923
+28,0.95,"softmax(Q * gaze)",0.691
+28,0.95,"softmax(Q) * gaze",0.741
+28,0.95,"softmax(Q) + gaze",0.918
+29,0.7,"Q",0.701
+29,0.7,"Q * gaze",0.694
+29,0.7,"Q + gaze",0.681
+29,0.7,"softmax(Q)",0.7085
+29,0.7,"softmax(Q * gaze)",0.729
+29,0.7,"softmax(Q) * gaze",0.718
+29,0.7,"softmax(Q) + gaze",0.691
+31,1,"Q",0.816
+31,1,"Q * gaze",0.9625
+31,1,"Q + gaze",0.943
+31,1,"softmax(Q)",0.9575
+31,1,"softmax(Q * gaze)",0.936
+31,1,"softmax(Q) * gaze",0.978
+31,1,"softmax(Q) + gaze",0.9625
+32,1,"Q",0.7845
+32,1,"Q * gaze",0.875
+32,1,"Q + gaze",0.867
+32,1,"softmax(Q)",0.808
+32,1,"softmax(Q * gaze)",0.908
+32,1,"softmax(Q) * gaze",0.8755
+32,1,"softmax(Q) + gaze",0.894
+33,0.95,"Q",0.7925
+33,0.95,"Q * gaze",0.826
+33,0.95,"Q + gaze",0.811
+33,0.95,"softmax(Q)",0.9815
+33,0.95,"softmax(Q * gaze)",0.8615
+33,0.95,"softmax(Q) * gaze",0.945
+33,0.95,"softmax(Q) + gaze",0.9835
+34,1,"Q",0.7405
+34,1,"Q * gaze",0.6805
+34,1,"Q + gaze",0.7575
+34,1,"softmax(Q)",0.903
+34,1,"softmax(Q * gaze)",0.831
+34,1,"softmax(Q) * gaze",0.7565
+34,1,"softmax(Q) + gaze",0.914
+35,0.6,"Q",0.6565
+35,0.6,"Q * gaze",0.5075
+35,0.6,"Q + gaze",0.663
+35,0.6,"softmax(Q)",0.7405
+35,0.6,"softmax(Q * gaze)",0.4955
+35,0.6,"softmax(Q) * gaze",0.5045
+35,0.6,"softmax(Q) + gaze",0.7505
+38,1,"Q",0.9715
+38,1,"Q * gaze",0.8875
+38,1,"Q + gaze",0.938
+38,1,"softmax(Q)",0.9825
+38,1,"softmax(Q * gaze)",0.903
+38,1,"softmax(Q) * gaze",0.9275
+38,1,"softmax(Q) + gaze",0.9675
+40,0.95,"Q",0.874
+40,0.95,"Q * gaze",0.5705
+40,0.95,"Q + gaze",0.8845
+40,0.95,"softmax(Q)",0.9005
+40,0.95,"softmax(Q * gaze)",0.58
+40,0.95,"softmax(Q) * gaze",0.5985
+40,0.95,"softmax(Q) + gaze",0.9
+41,0.45,"Q",0.5595
+41,0.45,"Q * gaze",0.5175
+41,0.45,"Q + gaze",0.531
+41,0.45,"softmax(Q)",0.573
+41,0.45,"softmax(Q * gaze)",0.5095
+41,0.45,"softmax(Q) * gaze",0.5
+41,0.45,"softmax(Q) + gaze",0.5275
+42,0.8,"Q",0.7525
+42,0.8,"Q * gaze",0.601
+42,0.8,"Q + gaze",0.6925
+42,0.8,"softmax(Q)",0.8995
+42,0.8,"softmax(Q * gaze)",0.6945
+42,0.8,"softmax(Q) * gaze",0.688
+42,0.8,"softmax(Q) + gaze",0.8585
+43,0.75,"Q",0.668
+43,0.75,"Q * gaze",0.691
+43,0.75,"Q + gaze",0.7485
+43,0.75,"softmax(Q)",0.7145
+43,0.75,"softmax(Q * gaze)",0.8165
+43,0.75,"softmax(Q) * gaze",0.68
+43,0.75,"softmax(Q) + gaze",0.734
+44,0.9,"Q",0.831
+44,0.9,"Q * gaze",0.8585
+44,0.9,"Q + gaze",0.836
+44,0.9,"softmax(Q)",0.9785
+44,0.9,"softmax(Q * gaze)",0.847
+44,0.9,"softmax(Q) * gaze",0.941
+44,0.9,"softmax(Q) + gaze",0.982
+45,1,"Q",0.826
+45,1,"Q * gaze",0.868
+45,1,"Q + gaze",0.8695
+45,1,"softmax(Q)",0.838
+45,1,"softmax(Q * gaze)",0.926
+45,1,"softmax(Q) * gaze",0.893
+45,1,"softmax(Q) + gaze",0.881
+46,0.95,"Q",0.8735
+46,0.95,"Q * gaze",0.871
+46,0.95,"Q + gaze",0.9045
+46,0.95,"softmax(Q)",0.8535
+46,0.95,"softmax(Q * gaze)",0.8695
+46,0.95,"softmax(Q) * gaze",0.866
+46,0.95,"softmax(Q) + gaze",0.892
+47,0.95,"Q",0.8385
+47,0.95,"Q * gaze",0.856
+47,0.95,"Q + gaze",0.867
+47,0.95,"softmax(Q)",0.9665
+47,0.95,"softmax(Q * gaze)",0.839
+47,0.95,"softmax(Q) * gaze",0.9215
+47,0.95,"softmax(Q) + gaze",0.93
+48,0.8,"Q",0.854
+48,0.8,"Q * gaze",0.587999999999999
+48,0.8,"Q + gaze",0.8485
+48,0.8,"softmax(Q)",0.893
+48,0.8,"softmax(Q * gaze)",0.5645
+48,0.8,"softmax(Q) * gaze",0.623
+48,0.8,"softmax(Q) + gaze",0.903
+49,0.85,"Q",0.8265
+49,0.85,"Q * gaze",0.79
+49,0.85,"Q + gaze",0.758
+49,0.85,"softmax(Q)",0.93
+49,0.85,"softmax(Q * gaze)",0.8685
+49,0.85,"softmax(Q) * gaze",0.8875
+49,0.85,"softmax(Q) + gaze",0.787
+50,1,"Q",0.8575
+50,1,"Q * gaze",0.527
+50,1,"Q + gaze",0.858
+50,1,"softmax(Q)",0.988
+50,1,"softmax(Q * gaze)",0.5195
+50,1,"softmax(Q) * gaze",0.541
+50,1,"softmax(Q) + gaze",0.9815
+51,0.65,"Q",0.76
+51,0.65,"Q * gaze",0.716
+51,0.65,"Q + gaze",0.698
+51,0.65,"softmax(Q)",0.8575
+51,0.65,"softmax(Q * gaze)",0.754
+51,0.65,"softmax(Q) * gaze",0.7485
+51,0.65,"softmax(Q) + gaze",0.7765
+52,1,"Q",0.935
+52,1,"Q * gaze",0.9445
+52,1,"Q + gaze",0.9605
+52,1,"softmax(Q)",0.989
+52,1,"softmax(Q * gaze)",0.9685
+52,1,"softmax(Q) * gaze",0.982
+52,1,"softmax(Q) + gaze",0.991
+53,1,"Q",0.8045
+53,1,"Q * gaze",0.7145
+53,1,"Q + gaze",0.8025
+53,1,"softmax(Q)",0.983
+53,1,"softmax(Q * gaze)",0.681
+53,1,"softmax(Q) * gaze",0.764
+53,1,"softmax(Q) + gaze",0.9755
+54,1,"Q",0.8825
+54,1,"Q * gaze",0.9245
+54,1,"Q + gaze",0.927
+54,1,"softmax(Q)",0.9755
+54,1,"softmax(Q * gaze)",0.9195
+54,1,"softmax(Q) * gaze",0.9805
+54,1,"softmax(Q) + gaze",0.9705
+55,0.6,"Q",0.5325
+55,0.6,"Q * gaze",0.475
+55,0.6,"Q + gaze",0.553
+55,0.6,"softmax(Q)",0.55
+55,0.6,"softmax(Q * gaze)",0.4625
+55,0.6,"softmax(Q) * gaze",0.487
+55,0.6,"softmax(Q) + gaze",0.5365
+56,0.95,"Q",0.7335
+56,0.95,"Q * gaze",0.542
+56,0.95,"Q + gaze",0.741
+56,0.95,"softmax(Q)",0.935
+56,0.95,"softmax(Q * gaze)",0.5805
+56,0.95,"softmax(Q) * gaze",0.5445
+56,0.95,"softmax(Q) + gaze",0.941
+57,1,"Q",0.7695
+57,1,"Q * gaze",0.681
+57,1,"Q + gaze",0.7965
+57,1,"softmax(Q)",0.992
+57,1,"softmax(Q * gaze)",0.706
+57,1,"softmax(Q) * gaze",0.812
+57,1,"softmax(Q) + gaze",0.9955
+58,0.9,"Q",0.873
+58,0.9,"Q * gaze",0.8055
+58,0.9,"Q + gaze",0.822
+58,0.9,"softmax(Q)",0.933
+58,0.9,"softmax(Q * gaze)",0.8455
+58,0.9,"softmax(Q) * gaze",0.873
+58,0.9,"softmax(Q) + gaze",0.8825

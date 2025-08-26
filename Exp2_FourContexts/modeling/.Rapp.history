@@ -1,0 +1,280 @@
+pwr.t.test(power=0.80, n=20, sig.level=0.05, type='one.sample')
+pwr.t.test(power=0.80, d=0.50, sig.level=0.05, type='one.sample')
+plot(pwr.t.test(power=0.80, d=0.50, sig.level=0.05, type='one.sample'))
+?cohen.ES
+?pwr.t.test
+pwr.t.test(d=.20, sig.level=.05, power=.8)
+pwr.t.test(d=.20, sig.level=.05, power=.8, type='one.sample')
+results <- pwr.t.test(d=.20, sig.level=.05, power=.80, type='one.sample')
+plot(results)
+results <- pwr.t.test(d=.50, sig.level=.05, power=.80, type='one.sample')
+plot(results)
+results <- pwr.t.test(n=20, sig.level=.05, power=.80, type='one.sample')
+plot(results)
+cohensD(Y, mu=50)
+t.test(Y, mu=50)$t.statistic
+t.test(Y, mu=50)$t.stat
+t.test(Y, mu=50)$statistic
+abs(t.test(Y, mu=50)$statistic)/sqrt(20)
+pnorm(1.96, mean=2, sd=1, lower.tail=F)
+pnorm(1.96, mean=2, sd=1.4, lower.tail=F)
+?pwr.z.test
+?power.z.test
+sqrt(30)
+sqrt(30)*.5
+pnorm(qnorm(.025, lower.tail=FALSE), mean=.50*sqrt(30), lower.tail=F)
+qnorm(.025, lower.tail=FALSE)
+pnorm(qnorm(.025, lower.tail=FALSE), mean=.20*sqrt(30), lower.tail=F)
+1.0954451
+.20*sqrt(30)
+.50*sqrt(30)
+pnorm(qnorm(.025, lower.tail=FALSE), mean=.20*sqrt(30), lower.tail=F) + pnorm(qnorm(.025, lower.tail=TRUE), mean=.20*sqrt(30), lower.tail=T)
+pnorm(qnorm(.025, lower.tail=FALSE), mean=.50*sqrt(30), lower.tail=F) + pnorm(qnorm(.025, lower.tail=TRUE), mean=.50*sqrt(30), lower.tail=T)
+pnorm(qnorm(.025, lower.tail=FALSE), mean=.80*sqrt(8), lower.tail=F) + pnorm(qnorm(.025, lower.tail=TRUE), mean=.80*sqrt(8), lower.tail=T)
+pnorm(qnorm(.01, lower.tail=FALSE), mean=.80*sqrt(8), lower.tail=F) + pnorm(qnorm(.01, lower.tail=TRUE), mean=.80*sqrt(8), lower.tail=T)
+pnorm(qnorm(.005, lower.tail=FALSE), mean=.80*sqrt(8), lower.tail=F) + pnorm(qnorm(.005, lower.tail=TRUE), mean=.80*sqrt(8), lower.tail=T)
+library(pwr)
+pwr.t.test(d=0.80, sig.level=0.05, power=0.80, type='one.sample')
+change_scores <- c(13, 3, -1, 9, 7, 7, 6, 4, -2, 2)
+length(change_scores)
+change_scores <- c(13, 3, -1, 9, 7, 7, 6, 4, -2, 2)
+t.test(change_scores, mu=0)
+d <- (mean(change_scores) - 0) / sd(change_scores)
+d
+library(lsr)
+cohensD(change_scores, mu=0)
+pwr.t.test(n=10, d=1.051347, sig.level=0.05, type='one.sample' )
+mean(change_scores)
+sd(change_scores)
+library(pwr)
+pwr.t.test(d=0.5, sig.level=0.05, power=0.90, type='one.sample')
+y <- rnorm(n=25, mean=25, sd=2)
+t.test(y, mu=20)
+y <- rnorm(n=25, mean=25, sd=3)
+t.test(y, mu=20)
+y <- rnorm(n=25, mean=23, sd=3)
+t.test(y, mu=20)
+y <- rnorm(n=25, mean=23, sd=3)
+t.test(y, mu=20)
+y <- rnorm(n=25, mean=21, sd=3)
+t.test(y, mu=20)
+y <- rnorm(n=25, mean=22, sd=3)
+t.test(y, mu=20)
+y <- rnorm(n=25, mean=22.5, sd=3)
+t.test(y, mu=20)
+pf(4.13, df1=1, df2=19, lower.tail=FALSE)
+qf(.05, 1, 21-1, lower.tail=F)
+library(pwr)
+pwr.t.test(n=30, d=0.15, sig.level=0.05, type='one.sample')
+pwr.t.test(n=5, d=0.8, sig.level=0.05, type='one.sample')
+qf(0.05, df1=1, df2=19, lower.tail=FALSE)
+library(pwr)
+pwr.t.test(d=0.80, sig.level=.05, power=.80, type='one.sample')
+pwr.t.test(d=0.80, sig.level=.05, power=.80, type='paired')
+Y <- c(2,4,10,12,16,15,4,27,9,-1, 15)
+mean(Y)
+t.test(Y)
+(mean(Y)-0)/sd(Y)
+pwr.t.test(n=11, d=1.29, sig.level=.05, type='one.sample')
+sd(Y)
+mean(Y)
+sd(Y)/sqrt(11)
+library(plot3D)
+install.packages('plot3D')
+library(plot3D)
+?cars
+data('mtcars')
+mtcars
+fit <- lm(mpg ~ hp + wt, data=mtcars)
+summary(fit)
+mpg
+grid.lines <- 40
+x <- mtcars$hp#
+y <- mtcars$wt#
+z <- mtcars$mpg
+x.pred <- seq(min(x), max(x), length.out=grid.lines)#
+y.pred <- seq(min(y), max(y), length.out=grid.lines)#
+xy <- expand.grid(x=x.pred, y=y.pred)
+x
+x.pred
+y.pred
+xy
+predict(fit, newdata=xy)
+fit <- lm(z ~ x + y, data=mtcars)
+fit <- lm(mpg ~ hp + wt, data=mtcars)
+grid.lines <- 40
+x <- mtcars$hp
+y <- mtcars$wt
+z <- mtcars$mpg
+x.pred <- seq(min(x), max(x), length.out=grid.lines)
+y.pred <- seq(min(y), max(y), length.out=grid.lines)
+xy <- expand.grid(x=x.pred, y=y.pred)
+colnames(xy) <- c('hp', 'wt')
+xy
+predict(fit, newdata=xy)
+z.pred <- matrix(predict(fit, newdata=xy), nrow=grid.lines, ncol=grid.lines)
+z.pred
+fitpoints <- predict(fit)
+fitpoints
+?ramp.col
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black'))
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black')
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black'
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black'))
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints))
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red',#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black'))
+?scatter3D
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red', phi=20,#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black'))
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red', phi=-20,#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black'))
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red', phi=30,#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.9), border='black'))
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red', phi=30,#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.5), border='black'))
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red', theta=45, phi=30,#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.5), border='black'))
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red', theta=45, phi=30,#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.5), border='black'))
+scatter3D(x, y, z, pch=19, cex=1, colvar=NULL, col='red', theta=55, phi=30,#
+bty='b', xlab='Horsepower', ylab='Weight (1000 lbs)', zlab='Miles per gallon',#
+surf=list(x=x.pred, y=y.pred, z=z.pred, facets=TRUE, fit=fitpoints,#
+col=ramp.col(col=c('dodgerblue3','seagreen2'), n=300, alpha=0.5), border=NULL))
+Y <- c(2,4,10,12,16,15,4,27,9,-1,15)
+library(pwr)
+pwr.t.test(d=0.8, sig.level=0.05, power=0.8, type='one.sample')
+t.test(Y, mu=0)
+mean(Y)/sd(Y)
+pwr.t.test(d=mean(Y)/sd(Y), sig.level=.05, n=11, type='one.sided')
+pwr.t.test(d=mean(Y)/sd(Y), sig.level=.05, n=11, type='one.sample')
+getwd()
+dat <- read.table(file='../Datasets/runners.txt', header=T)
+f
+}
+f = function(x) {#
+	return(37.479 - .754*x + .008*x^2)#
+}
+curve(f, from=0, to=50)
+curve(f, from=0, to=50, ylim=c(10,40))
+2 + 2
+rands <- rnorm(20)
+rands
+mean(rands)
+sd(rands)
+z <- rnorm(20)
+mean(z)
+sd(z)
+z
+x <- z/sd(z) + (0-mean(z))
+x
+mean(x)
+sd(x)
+x <- (z - mean(z))/sd(z)
+x
+mean(x)
+sd(x)
+x
+mean(round(x))
+round(x)
+sd(round(x))
+mean(round(x)*2 + 15)
+sd(round(x)*2 + 15)
+round(x)*2 + 15
+round(x)*2 + 18
+mean(round(x)*2 + 18)
+sd(round(x)*2 + 18)
+sd(round(x)*2 + 21)
+mean(round(x)*2 + 36)
+mean(round(x)*2 + 21)
+round(x)*2 + 21
+round(x)*2 + 24
+x
+mean((round(x)*2 + 18) > (round(x)*2 + 15))
+mean((round(sample(x, size=length(x)))*2 + 18) > (round(sample(x, size=length(x)))*2 + 15))
+round(x)*2 + 24
+round(x)*2 + 27
+round(x)*2 + 30
+round(x)*2 + 33
+round(x)*2 + 36
+choose(15,4)
+choose(15,4) + choose(15,5)
+choose(16,5)
+choose(17*5, 3)
+20*938
+choose(5,2)
+choose(5,2)*17
+18760/170
+setwd("/Users/whayes2/Library/CloudStorage/OneDrive-BinghamtonUniversity/DReaM Lab/Study--Value Learning in DM (eye tracking)/RL-LBA-gaze-model/Exp1_TwoContexts/modeling")
+load('results/Model11a_fits.Rdata')
+round(model11a_fits[[1]]$optim$bestmem, 5)
+round(model11a_fits[[1]]$optim$bestval, 5)
+round(model11a_fits[[2]]$optim$bestmem, 5)
+round(model11a_fits[[2]]$optim$bestval, 5)
+round(model11a_fits[[3]]$optim$bestmem, 5)
+round(model11a_fits[[3]]$optim$bestval, 5)
+topifnot(all.equal(pi, 3.141593),  2 < 2, all(1:10 < 12), "a" < "b")
+stopifnot(all.equal(pi, 3.141593),  2 < 2, all(1:10 < 12), "a" < "b")
+stopifnot(length(c(1,2,3)) == length(c(4,5,6)))
+stopifnot(length(c(1,2,3)) == length(c(4,5)))
+setwd("/Users/whayes2/Library/CloudStorage/OneDrive-BinghamtonUniversity/DReaM Lab/Study--Value Learning in DM (eye tracking)/RL-LBA-gaze-model/Exp2_FourContexts/modeling")
+load('results/Model2_fits.Rdata')
+round(model2_fits[[1]]$optim$bestmem, 5)
+round(model2_fits[[1]]$optim$bestval, 5)
+round(model2_fits[[2]]$optim$bestmem, 5)
+round(model2_fits[[2]]$optim$bestval, 5)
+round(model2_fits[[3]]]$optim$bestmem, 5)
+round(model2_fits[[3]]$optim$bestmem, 5)
+round(model2_fits[[3]]$optim$bestval, 5)
+load('results/Model12a_fits.Rdata')
+round(model12a_fits[[1]]$optim$bestmem, 5)
+round(model12a_fits[[1]]$optim$bestval, 5)
+round(model12a_fits[[2]]$optim$bestmem, 5)
+round(model12a_fits[[2]]$optim$bestval, 5)
+round(model12a_fits[[3]]$optim$bestmem, 5)
+round(model12a_fits[[3]]$optim$bestval, 5)
+round(model12a_fits[[4]]$optim$bestmem, 5)
+round(model12a_fits[[4]]$optim$bestval, 5)
+round(model12a_fits[[5]]$optim$bestmem, 5)
+round(model12a_fits[[5]]$optim$bestval, 5)
+round(model12a_fits[[6]]$optim$bestmem, 5)
+round(model12a_fits[[6]]$optim$bestval, 5)
+load('results/Model4_fits.Rdata')
+round(model2_fits[[3]]$optim$bestval, 5)
+round(model4_fits[[3]]$optim$bestval, 5)
+load('results/Model6_fits.Rdata')
+round(model6_fits[[3]]$optim$bestval, 5)
+load('results/Model8a_fits.Rdata')
+load('results/Model8b_fits.Rdata')
+load('results/Model10a_fits.Rdata')
+load('results/Model10b_fits.Rdata')
+load('results/Model12b_fits.Rdata')
+round(model8a_fits[[3]]$optim$bestval, 5)
+round(model8b_fits[[3]]$optim$bestval, 5)
+round(model10a_fits[[3]]$optim$bestval, 5)
+round(model10b_fits[[3]]$optim$bestval, 5)
+round(model12a_fits[[3]]$optim$bestval, 5)
+round(model12bfits[[3]]$optim$bestval, 5)
+round(model12b_fits[[3]]$optim$bestval, 5)
+round(model8a_fits[[3]]$optim$bestme, 5)
+round(model8a_fits[[3]]$optim$bestmem, 5)
+round(model12a_fits[[7]]$optim$bestmem, 5)
+round(model12a_fits[[7]]$optim$bestval, 5)
+round(model12a_fits[[8]]$optim$bestmem, 5)
+round(model12a_fits[[8]]$optim$bestval, 5)
+round(model12a_fits[[9]]$optim$bestmem, 5)
+round(model12a_fits[[9]]$optim$bestval, 5)

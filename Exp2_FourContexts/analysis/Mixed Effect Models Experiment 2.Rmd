@@ -1,0 +1,362 @@
+---
+title: "Mixed Effect Models Experiment 2"
+author: Melanie J. Touchard
+output: html_document
+---
+
+```{r}
+#install necessary packages
+library(dplyr)
+library(afex)
+```
+
+#Read in Data
+
+```{r}
+source('../modeling/load_data.R')
+```
+
+
+#Prep the Data 
+
+Compute EV Difference and Overall Expected Value (OEV)
+
+```{r}
+dat <- dat %>%
+  mutate(
+    ev_difference = abs(EV_left - EV_right),
+    OEV = EV_left + EV_right
+  )
+```
+
+Log the RTs
+
+```{r}
+dat <- dat %>%
+  filter(RT > 0) %>%
+  mutate(log_RT = log(RT))
+```
+
+
+Split into learning phase and transfer test data
+
+```{r}
+learning_data <- dat %>% filter(block == 'learning')
+transfer_data <- dat %>% filter(block == 'transfer')
+```
+
+
+# Learning phase mixed-effects models
+
+Standardize Predictors Within Subjects
+
+```{r}
+learning_data <- learning_data %>%
+  group_by(subject) %>%
+  mutate(
+    gaze_diff_z     = scale(gaze_diff)[, 1],
+    trial_number_z  = scale(trial_number)[, 1],
+    OEV_z = scale(OEV)[,1],
+  ) %>%
+  ungroup()
+```
+
+
+Linear Mixed-Effects Model Predicting Proportional Gaze Advantage for the Correct Option from Trial Number and Overall Expected Value
+
+```{r}
+model_exp2_gaze_OEV <- mixed(
+  gaze_diff ~  trial_number_z * OEV_z +
+    (1 + trial_number_z * OEV_z | subject),
+  data = learning_data,
+  control = lmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+summary(model_exp2_gaze_OEV)
+```
+
+
+Logistic Mixed-Effects Model Predicting Choice Accuracy from Trial Number, Overall Expected Value, and Proportional Gaze Advantage for the Correct Option (GLMM1)
+
+```{r}
+model_exp2_correct_OEV <- mixed(
+  correct ~ trial_number_z * (gaze_diff_z + OEV_z) +
+    (1 + trial_number_z * (gaze_diff_z + OEV_z) | subject),
+  data = learning_data,
+  family = binomial,
+  method = "LRT",
+  control = glmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+summary(model_exp2_correct_OEV)
+```
+
+
+```{r}
+#Coefficient Table
+# coef_df <- coef(model_exp2_correct_OEV$full_model)[[1]]
+# write.csv(
+#   coef_df,
+#   file = "exp2_GLMM1_individual_estimates.csv",
+#   row.names = TRUE
+# )
+```
+
+
+Linear Mixed-Effects Model Predicting log RT from Trial Number, Overall Expected Value, and Proportional Gaze Advantage for the Correct Option (LMM1)
+
+```{r}
+model_exp2_RT_OEV <- mixed(
+  log_RT ~ trial_number_z * (gaze_diff_z + OEV_z) +
+    (1 + trial_number_z * (gaze_diff_z + OEV_z) | subject),
+  data = learning_data,
+  control = lmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+summary(model_exp2_RT_OEV)
+```
+
+```{r}
+# coef_df <- coef(model_exp2_RT_OEV$full_model)[[1]]
+# write.csv(
+#   coef_df,
+#   file = "exp2_LMM1_individual_estimates.csv",
+#   row.names = TRUE
+# )
+```
+
+
+Logistic Mixed-Effects Model Predicting Choice Accuracy from Overall Expected Value, Proportional Gaze Advantage for the Correct Option, and the Interaction (GLMM3)
+
+```{r}
+model_exp2_GLMM3 <- mixed(
+  correct ~ gaze_diff_z * OEV_z +
+    (1 + gaze_diff_z * OEV_z | subject),
+  data = learning_data,
+  family = binomial,
+  method = "LRT",
+  control = glmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+summary(model_exp2_GLMM3)
+```
+
+```{r}
+#Coefficient Table
+# coef_df <- coef(model_exp2_GLMM3$full_model)[[1]]
+# write.csv(
+#   coef_df,
+#   file = "exp2_GLMM3_individual_estimates.csv",
+#   row.names = TRUE
+# )
+```
+
+
+# Transfer test mixed-effects models
+
+Compute Relative Value Difference and Overall Relative Value (ORV)
+
+```{r}
+transfer_data <- transfer_data %>%
+  mutate(
+    left_RV  = if_else(left_index %% 2 == 0, 1, 0),
+    right_RV = if_else(right_index %% 2 == 0, 1, 0)
+  )
+
+transfer_data <- transfer_data %>%
+  mutate(
+    rel_val_diff = ifelse(correct_resp == "left",
+                          left_RV - right_RV,
+                          right_RV - left_RV),
+    abs_rel_val_diff = abs(rel_val_diff)
+  )
+
+transfer_data <- transfer_data %>%
+  mutate(
+    ORV = left_RV + right_RV
+  )
+```
+
+
+Compute Absolute Gaze Difference
+
+```{r}
+transfer_data <- transfer_data %>%
+  mutate(
+    abs_gaze_diff = abs(gaze_diff)
+  )
+```
+
+
+Standardize Predictors Within Subjects
+
+```{r}
+transfer_data <- transfer_data %>%
+  group_by(subject) %>%
+  mutate(
+    gaze_diff_z = scale(gaze_diff)[, 1],
+    abs_gaze_diff_z = scale(abs_gaze_diff)[, 1],
+    rel_val_diff_z = scale(rel_val_diff)[, 1],
+    abs_rel_val_diff_z = scale(abs_rel_val_diff)[, 1],
+    ev_difference_z = scale(ev_difference)[, 1],
+    OEV_z = scale(OEV)[, 1],
+    ORV_z = scale(ORV)[, 1]
+  ) %>%
+  ungroup()
+```
+
+
+
+Logistic Mixed-Effects Model Predicting Transfer Test Choice Accuracy from EV Difference, Proportional Gaze Advantage for the Correct Option, Signed Relative Value Difference, Overall Expected Value, and Overall Relative Value 
+
+```{r}
+
+model_transfer_exp2_correct_OEV_ORV <- mixed(
+  correct ~ ev_difference_z + rel_val_diff_z + OEV_z + ORV_z + gaze_diff_z +
+    (1 + ev_difference_z + rel_val_diff_z + OEV_z + ORV_z + gaze_diff_z | subject),
+  data = transfer_data,
+  family = binomial,
+  method = "LRT",
+  control = glmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+
+summary(model_transfer_exp2_correct_OEV_ORV)
+```
+
+```{r}
+#Coefficient Table
+# coef_df <- coef(model_transfer_exp2_correct_OEV_ORV$full_model)[[1]]
+# write.csv(
+#   coef_df,
+#   file = "exp2_GLMM2_individual_estimates.csv",
+#   row.names = TRUE
+# )
+```
+
+
+Linear Mixed-Effects Model Predicting Transfer Test RT from EV Difference, Unsigned (Absolute) Relative Value Difference, Unsigned Proportional Gaze Difference, Overall Expected Value, and Overall Relative Value (LMM2)
+
+```{r}
+model_transfer_exp2_RT_OEV_ORV <- mixed(
+  log_RT ~ ev_difference_z + abs_rel_val_diff_z + OEV_z + ORV_z + abs_gaze_diff_z +
+    (1 + ev_difference_z + abs_rel_val_diff_z + OEV_z + ORV_z + abs_gaze_diff_z | subject),
+  data = transfer_data,
+  control = lmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+summary(model_transfer_exp2_RT_OEV_ORV)
+```
+
+```{r}
+#Coefficient Table
+# coef_df <- coef(model_transfer_exp2_RT_OEV_ORV$full_model)[[1]]
+# write.csv(
+#   coef_df,
+#   file = "exp2_LMM2_individual_estimates.csv",
+#   row.names = TRUE
+# )
+```
+
+
+#Nested Model Comparisons
+
+Testing the Linear Mixed-Effects Model Predicting Proportional Gaze Advantage for the Correct Option against an Intercept-Only Model
+
+```{r}
+model_intercept_only <- mixed(
+  gaze_diff ~ 1 + (1 | subject),
+  data = learning_data,
+  control = lmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+anova(model_intercept_only, model_exp2_gaze_OEV, test = "Chi")
+```
+
+Testing the Logistic Mixed-Effects Model Predicting Choice Accuracy against a No-Gaze Model
+
+```{r}
+model_c_correct_exp2 <- mixed(
+  correct ~ trial_number_z * OEV_z +
+    (1 + trial_number_z * OEV_z | subject),
+  data = learning_data,
+  family = binomial,
+  method = "LRT",
+  control = glmerControl(optimizer = "bobyqa",
+                         optCtrl = list(maxfun = 1e5))
+)
+
+anova(model_c_correct_exp2, model_exp2_correct_OEV)
+```
+
+Testing the Linear Mixed-Effects Model Predicting log RT against a No-Gaze Model
+
+```{r}
+model_c_RT_exp2 <- mixed(
+  log_RT ~ trial_number_z * OEV_z +
+    (1 + trial_number_z * OEV_z | subject),
+  data = learning_data,
+  control = lmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+anova(model_c_RT_exp2, model_exp2_RT_OEV)
+```
+
+Testing the Logistic Mixed-Effects Model Predicting Transfer Test Choice Accuracy Against a No-Gaze Model
+
+```{r}
+model_transfer_c_correct_exp2 <- mixed(
+  correct ~ ev_difference_z + rel_val_diff_z + OEV_z + ORV_z +
+    (1 + ev_difference_z + rel_val_diff_z + OEV_z + ORV_z | subject),
+  data = transfer_data,
+  family = binomial,
+  method = "LRT",
+  control = glmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+anova(model_transfer_c_correct_exp2, model_transfer_exp2_correct_OEV_ORV)
+```
+
+Testing the Linear Mixed-Effects Model Predicting Transfer Test RT Against a No-Gaze Model
+
+```{r}
+model_transfer_c_RT_exp2 <- mixed(
+  log_RT ~ ev_difference_z + abs_rel_val_diff_z + OEV_z + ORV_z +
+    (1 + ev_difference_z + abs_rel_val_diff_z + OEV_z + ORV_z | subject),
+  data = transfer_data,
+  control = lmerControl(
+    optimizer = "bobyqa",
+    optCtrl = list(maxfun = 1e5)
+  )
+)
+
+anova(model_transfer_c_RT_exp2, model_transfer_exp2_RT_OEV_ORV)
+```
+
