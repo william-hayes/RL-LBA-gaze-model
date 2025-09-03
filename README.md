@@ -1,10 +1,10 @@
 # A Reinforcement Learning and Sequential Sampling Model Constrained by Gaze Data
 
-* model_functions.R contains functions for simulating and fitting models 1-7 in the main text.
-* model_functions_v2.R contains functions for simulating and fitting the models with trial-dependent decision threshold.
-* ExpDesignFigure.R generates the reward distributions in Figure 1A.
-* Fig1_Qvalues.R generates the Q-value plot in Figure 1B.
-* drift_heatmap.R generates Figures S1 and S2 (plus an additional figure for RT effects).
+* *model_functions.R* contains functions for simulating and fitting models 1-7 in the main text.
+* *model_functions_v2.R* contains functions for simulating and fitting the models with trial-dependent decision threshold.
+* *ExpDesignFigure.R* generates the reward distributions in Figure 1A.
+* *Fig1_Qvalues.R* generates the Q-value plot in Figure 1B.
+* *drift_heatmap.R* generates Figures S1 and S2 (plus an additional figure for RT effects).
 
 **Exp1_TwoContexts and Exp2_FourContexts contain data and code for Experiments 1 and 2 in the main text.**
 
