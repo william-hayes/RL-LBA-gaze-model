@@ -4,21 +4,21 @@ This repo has two versions:
 
 **Version 2.0 has updated modeling code written in Rcpp for faster run times.**
 
-**Version 1.0 corresponds to our [bioRxiv preprint] (<https://www.biorxiv.org/content/10.1101/2025.08.27.672620v1>).**
+**Version 1.0 corresponds to our [bioRxiv preprint](https://www.biorxiv.org/content/10.1101/2025.08.27.672620v1).**
 
 ## Data analysis & plotting
 
 To reproduce our analyses and figures, simply work through the following R Markdown files:
 
--   [Experiment 1:] (Exp1_TwoContexts/analysis/Exp1_Analysis.Rmd)
--   [Experiment 2:] (Exp2_FourContexts/analysis/Exp2_Analysis.Rmd)
+-   [Experiment 1 Analyses](Exp1_TwoContexts/analysis/Exp1_Analysis.Rmd)
+-   [Experiment 2 Analyses](Exp2_FourContexts/analysis/Exp2_Analysis.Rmd)
 
 ## Model fitting
 
 The following scripts can be used to fit any of our models to each participant's data:
 
--   [Experiment 1:] (Exp1_TwoContexts/modeling/fit_model_Exp1.R)
--   [Experiment 2:] (Exp2_FourContexts/modeling/fit_model_Exp2.R)
+-   [Experiment 1 Model Fitting](Exp1_TwoContexts/modeling/fit_model_Exp1.R)
+-   [Experiment 2 Model Fitting](Exp2_FourContexts/modeling/fit_model_Exp2.R)
 
 If working from the command line, note that each script takes a number of command line arguments.
 
@@ -58,8 +58,8 @@ Rscript fit_model_Exp2.R 8 1 0
 
 The following scripts can be used to compute a model's APE for each participant:
 
--   [Experiment 1:] (Exp1_TwoContexts/modeling/APE_Exp1.R)
--   [Experiment 2:] (Exp2_FourContexts/modeling/APE_Exp2.R)
+-   [Experiment 1 APE](Exp1_TwoContexts/modeling/APE_Exp1.R)
+-   [Experiment 2 APE](Exp2_FourContexts/modeling/APE_Exp2.R)
 
 If working from the command line, note that each script takes a number of command line arguments.
 
@@ -97,22 +97,22 @@ Rscript APE_Exp1.R 7 1 0 1
 
 The following scripts can be used to simulate all models in our tasks using each participant's fitted parameters:
 
--   [Experiment 1:] (Exp1_TwoContexts/modeling/simulate_models.R)
--   [Experiment 2:] (Exp2_FourContexts/modeling/simulate_models.R)
+-   [Experiment 1 Model Simulation](Exp1_TwoContexts/modeling/simulate_models.R)
+-   [Experiment 2 Model Simulation](Exp2_FourContexts/modeling/simulate_models.R)
 
 ## Parameter recovery
 
 The following scripts can be used to reproduce our parameter recovery experiments:
 
--   [Experiment 1:] (Exp1_TwoContexts/modeling/param_recovery_Exp1.R)
--   [Experiment 2:] (Exp2_FourContexts/modeling/param_recovery_Exp2.R)
+-   [Experiment 1 Parameter Recovery](Exp1_TwoContexts/modeling/param_recovery_Exp1.R)
+-   [Experiment 2 Parameter Recovery](Exp2_FourContexts/modeling/param_recovery_Exp2.R)
 
 ## Other contents
 
--   *ExpDesignFigure.R* generates the reward distributions in Figure 1A.
+-   [Reward Distributions Plot](ExpDesignFigure.R) generates the reward distributions in Figure 1A.
 
--   *Fig1_Qvalues.R* generates the Q-value plot in Figure 1B.
+-   [Q Values Plot](Fig1_Qvalues.R) generates the Q-value plot in Figure 1B.
 
--   *drift_heatmap.R* generates Figures S1 and S2.
+-   [Supplemental Figures S1 and S2](drift_heatmap.R) generates Figures S1 and S2.
 
 -   R Markdown files for mixed effects modeling can be found in the analysis subfolders.
