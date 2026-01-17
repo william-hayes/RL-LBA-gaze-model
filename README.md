@@ -1,15 +1,118 @@
 # A Reinforcement Learning and Sequential Sampling Model Constrained by Gaze Data
 
-* *model_functions.R* contains functions for simulating and fitting models 1-7 in the main text.
-* *model_functions_v2.R* contains functions for simulating and fitting the models with trial-dependent decision threshold.
-* *ExpDesignFigure.R* generates the reward distributions in Figure 1A.
-* *Fig1_Qvalues.R* generates the Q-value plot in Figure 1B.
-* *drift_heatmap.R* generates Figures S1 and S2 (plus an additional figure for RT effects).
+This repo has two versions:
 
-**Exp1_TwoContexts and Exp2_FourContexts contain data and code for Experiments 1 and 2 in the main text.**
+**Version 2.0 has updated modeling code written in Rcpp for faster run times.**
 
-* **data**: contains the trial-level data.
-* **modeling**: contains scripts for loading and preparing the individual data sets (*load_data.R*), fitting models to individual data (*fit_model_Exp\*.R*), computing accumulative one-step-ahead prediction error (*APE_Exp\*.R*), simulating models (*simulate_models.R*), and testing parameter recovery (*param_recovery_Exp\*.R*). Note that model fitting, APE computation, and parameter recovery were carried out on a high-performance computing cluster and hence have corresponding shell scripts (.sh files). To reduce run times, APE computation was carried out in batches run in parallel.
-  * **results** subfolder contains modeling output (.RDS files).
-* **analysis**: contains R markdown files for all computational modeling analyses (*Exp\*_Analysis.Rmd*) and mixed-effects modeling (*Mixed Effect Models Experiment \*.Rmd*). The CSV files contain model fit results.
+**Version 1.0 corresponds to our [bioRxiv preprint] (<https://www.biorxiv.org/content/10.1101/2025.08.27.672620v1>).**
 
+## Data analysis & plotting
+
+To reproduce our analyses and figures, simply work through the following R Markdown files:
+
+-   [Experiment 1:] (Exp1_TwoContexts/analysis/Exp1_Analysis.Rmd)
+-   [Experiment 2:] (Exp2_FourContexts/analysis/Exp2_Analysis.Rmd)
+
+## Model fitting
+
+The following scripts can be used to fit any of our models to each participant's data:
+
+-   [Experiment 1:] (Exp1_TwoContexts/modeling/fit_model_Exp1.R)
+-   [Experiment 2:] (Exp2_FourContexts/modeling/fit_model_Exp2.R)
+
+If working from the command line, note that each script takes a number of command line arguments.
+
+**fit_model_Exp1.R:**
+
+-   arg1: index of model to fit (integer between 1 and 8)
+
+-   arg2: value at which to fix the $w_{rel}$ parameter (float between 0 and 1)
+
+-   arg3: whether to freely estimate the $\theta$ parameter or fix it to 50 (integer: 0 or 1)
+
+**fit_model_Exp2.R:**
+
+-   arg1: index of model to fit (integer between 1 and 8)
+
+-   arg2: whether to freely estimate the $\theta$ parameter or fix it to 50 (integer: 0 or 1)
+
+-   arg3: whether to fit a decreasing threshold or a static threshold (integer: 0 or 1)
+
+The arguments must be specified in that order. See examples below.
+
+``` bash
+cd Exp1_TwoContexts/modeling
+
+# Fit Model 7 to the data from Experiment 1, fixing w_rel to 0 and with theta free
+Rscript fit_model_Exp1.R 7 0 1
+```
+
+``` bash
+cd Exp2_FourContexts/modeling
+
+# Fit Model 8 to the data from Experiment 2, with theta free and a static decision threshold
+Rscript fit_model_Exp2.R 8 1 0
+```
+
+## Accumulative one-step-ahead prediction error (APE)
+
+The following scripts can be used to compute a model's APE for each participant:
+
+-   [Experiment 1:] (Exp1_TwoContexts/modeling/APE_Exp1.R)
+-   [Experiment 2:] (Exp2_FourContexts/modeling/APE_Exp2.R)
+
+If working from the command line, note that each script takes a number of command line arguments.
+
+**APE_Exp1.R:**
+
+-   arg1: index of model to use (integer between 1 and 8)
+
+-   arg2: batch number (integer between 1 and 20); see below
+
+-   arg3: value at which to fix the $w_{rel}$ parameter (float between 0 and 1)
+
+-   arg4: whether to freely estimate the $\theta$ parameter or fix it to 50 (integer: 0 or 1)
+
+**APE_Exp2.R:**
+
+-   arg1: index of model to use (integer between 1 and 8)
+
+-   arg2: batch number (integer between 1 and 20); see below
+
+-   arg3: whether to freely estimate the $\theta$ parameter or fix it to 50 (integer: 0 or 1)
+
+The arguments must be specified in that order. See example below.
+
+``` bash
+cd Exp1_TwoContexts/modeling
+
+# Compute Model 7's APE for the first batch of participants in Experiment 1,
+# fixing w_rel to 0 and with theta as a free parameter
+Rscript APE_Exp1.R 7 1 0 1
+```
+
+**Important:** APE computation was carried out on a computing cluster, with the workload split into 20 batches that were run in parallel across different nodes. In each batch, APE is computed for a small number of participants.
+
+## Model simulation
+
+The following scripts can be used to simulate all models in our tasks using each participant's fitted parameters:
+
+-   [Experiment 1:] (Exp1_TwoContexts/modeling/simulate_models.R)
+-   [Experiment 2:] (Exp2_FourContexts/modeling/simulate_models.R)
+
+## Parameter recovery
+
+The following scripts can be used to reproduce our parameter recovery experiments:
+
+-   [Experiment 1:] (Exp1_TwoContexts/modeling/param_recovery_Exp1.R)
+-   [Experiment 2:] (Exp2_FourContexts/modeling/param_recovery_Exp2.R)
+
+## Other contents
+
+-   *ExpDesignFigure.R* generates the reward distributions in Figure 1A.
+
+-   *Fig1_Qvalues.R* generates the Q-value plot in Figure 1B.
+
+-   *drift_heatmap.R* generates Figures S1 and S2.
+
+-   R Markdown files for mixed effects modeling can be found in the analysis subfolders.
