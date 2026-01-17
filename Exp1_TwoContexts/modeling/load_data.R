@@ -16,9 +16,11 @@ dat <- dat %>%
 
 # individual datasets 
 datasets <- list()
+modeling_data <- list()
 IDs <- unique(dat$subject)
 for (i in 1:length(IDs)) {
   subject_data <- dat %>% filter(subject == IDs[i])
+  
   datasets[[i]] <- list(subject = IDs[i],
                         EV_1 = subject_data$EV_1,
                         EV_2 = subject_data$EV_2,
@@ -31,5 +33,20 @@ for (i in 1:length(IDs)) {
                         gaze_pre = as.matrix(subject_data[,c('pre_fix_avail_1','pre_fix_avail_2')]),
                         gaze_bucket = subject_data$gaze_bucket,
                         N = sum(subject_data$RT >= 250 & subject_data$RT <= 10000))
+  
+  # model inputs only
+  modeling_data[[i]] <- list(choice = subject_data$choice_id - 1,
+                             RT = subject_data$RT,
+                             options = as.matrix(subject_data[,c('option_1','option_2','option_3','option_4')]) - 1,
+                             outcomes = as.matrix(subject_data[,c('outcome_1','outcome_2','outcome_3','outcome_4')]),
+                             avail = as.matrix(subject_data[,c('avail_1','avail_2')]) - 1,
+                             gaze = as.matrix(subject_data[,c('pre_fix_avail_1','pre_fix_avail_2')]),
+                             n_opt = 8,
+                             min_o = min(as.matrix(subject_data[,c('outcome_1','outcome_2','outcome_3','outcome_4')]), na.rm=T),
+                             max_o = max(as.matrix(subject_data[,c('outcome_1','outcome_2','outcome_3','outcome_4')]), na.rm=T),
+                             rt_lower=250,
+                             rt_upper=10000,
+                             Q_init=0.5)
+  
   rm(subject_data)
 }
