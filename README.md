@@ -2,7 +2,7 @@
 
 This repo has two versions:
 
-**Version 2.0 has updated modeling code written in Rcpp for faster run times.**
+**Version 2.0 corresponds to our [published paper](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1014052). It has updated modeling code written in Rcpp for faster run times.**
 
 **Version 1.0 corresponds to our [bioRxiv preprint](https://www.biorxiv.org/content/10.1101/2025.08.27.672620v1).**
 
